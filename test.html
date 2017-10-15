@@ -66,7 +66,7 @@ body {
 <script>
 var camera, scene, renderer, mesh, light, controls;
 var keyboard = new KeyboardState();
-var balanceCar, handle, bottom, head, turret, barrel;
+var tank, handle, bottom, head, turret, barrel;
 
 init();
 animate();
@@ -107,14 +107,20 @@ function init() {
     var bodyMat = new THREE.MeshPhongMaterial ({color: 0x555555,
     	map: bodyTex
     	});
-    balanceCar = new THREE.Mesh (bodyGeo, bodyMat);
-    scene.add (balanceCar);
+    tank = new THREE.Mesh (bodyGeo, bodyMat);
 
     turret = new THREE.Object3D();
 
+    var barrelGeo = new THREE.CylinderGeometry (1, 1, 10, 32);
+    var barrelMat = new THREE.MeshPhongMaterial ({color: 0x000000});
+    barrel = new THREE.Mesh (barrelGeo, barrelMat);
+    barrel.rotation.z = Math.PI/2;
+    barrel.position.x = 5;
+
     head = new THREE.Mesh(new THREE.SphereGeometry(3, 32, 32), new THREE.MeshBasicMaterial({color: 0x664c14}));
-    head.position.y = 10;
-    turret.add(head);
+
+    turret.add(head, barrel);
+    turret.position.y = 10;
 
     //bottom
     var bottomGeo = new THREE.SphereGeometry (4, 32, 32, 0, Math.PI*2, 0, Math.PI/2);
@@ -122,7 +128,7 @@ function init() {
     var bottomMat = new THREE.MeshPhongMaterial ({color: 0x000000});
     bottom = new THREE.Mesh (bottomGeo, bottomMat);
     bottom.position.set (0, 2.5, 0);
-    balanceCar.add (bottom);
+    tank.add (bottom);
 
     //handle
     var handleGeo = new THREE.CylinderGeometry (2, 2, 10, 32);
@@ -132,17 +138,11 @@ function init() {
 
     handle.rotation.order = 'YXZ';
     handle.rotation.y = -Math.PI/2;
-    balanceCar.add (handle);
+    tank.add (handle);
 
-    var barrelGeo = new THREE.CylinderGeometry (1, 1, 10, 32);
-    var barrelMat = new THREE.MeshPhongMaterial ({color: 0x000000});
-    barrel = new THREE.Mesh (barrelGeo, barrelMat);
-    barrel.rotation.z = Math.PI/2;
-    barrel.position.x = 5;
-    barrel.position.y = 10;
-    turret.add (barrel);
 
-    balanceCar.add(tire, tire2, turret);
+    tank.add(tire, tire2, turret);
+    scene.add(tank);
 
     //balanceCar.position.y = 20;
     
