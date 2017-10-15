@@ -66,7 +66,7 @@ body {
 <script>
 var camera, scene, renderer, mesh, light, controls;
 var keyboard = new KeyboardState();
-var tank, handle, bottom, head, barrel;
+var tank, handle, bottom, head, turret, barrel;
 
 init();
 animate();
@@ -109,16 +109,18 @@ function init() {
     	});
     tank = new THREE.Mesh (bodyGeo, bodyMat);
 
-    head = new THREE.Mesh(new THREE.SphereGeometry(3, 32, 32), new THREE.MeshBasicMaterial({color: 0x664c14}));
+    turret = new THREE.Object3D();
 
     var barrelGeo = new THREE.CylinderGeometry (1, 1, 10, 32);
     var barrelMat = new THREE.MeshPhongMaterial ({color: 0x000000});
     barrel = new THREE.Mesh (barrelGeo, barrelMat);
-    barrel.rotation.z = Math.PI/2;
     barrel.position.x = 5;
+    barrel.rotation.z = -Math.PI/2;
 
-    head.add(barrel);
-    head.position.y = 10;
+    head = new THREE.Mesh(new THREE.SphereGeometry(3, 32, 32), new THREE.MeshBasicMaterial({color: 0x664c14}));
+
+    turret.add(head, barrel);
+    turret.position.y = 10;
 
     //bottom
     var bottomGeo = new THREE.SphereGeometry (4, 32, 32, 0, Math.PI*2, 0, Math.PI/2);
@@ -139,7 +141,7 @@ function init() {
     tank.add (handle);
 
 
-    tank.add(tire, tire2, head);
+    tank.add(tire, tire2, turret);
     scene.add(tank);
 
     //balanceCar.position.y = 20;
