@@ -292,26 +292,6 @@
 
     if (keyboard.pressed("W")) {
 
-      if (keyboard.pressed("A")) {
-
-        change += 0.035;
-        tire.rotation.z -= 0.2;
-
-        turret.remove(laser);
-        scene.remove(laserR, laserR2);
-
-      }
-
-      if (keyboard.pressed("D")) {
-
-        change += -0.035;
-        tire2.rotation.z -= 0.2;
-
-        turret.remove(laser);
-        scene.remove(laserR, laserR2);
-
-      }
-
       go += 3;
 
       tire.rotation.z -= 0.5;
@@ -324,16 +304,6 @@
 
     if (keyboard.pressed("A")) {
 
-      if (keyboard.pressed("W")) {
-
-        change += 0.035;
-        tire.rotation.z -= 0.2;
-
-        turret.remove(laser);
-        scene.remove(laserR, laserR2);
-
-      }
-
       change += 0.035;
 
       tire.rotation.z -= 0.2;
@@ -345,16 +315,6 @@
     }
 
     if (keyboard.pressed("D")) {
-
-      if (keyboard.pressed("W")) {
-
-        change += -0.035;
-        tire2.rotation.z -= 0.2;
-
-        turret.remove(laser);
-        scene.remove(laserR, laserR2);
-
-      }
 
       change += -0.035;
 
