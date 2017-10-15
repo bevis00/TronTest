@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+	body {
+		background-color: #fff;
+		color: #111;
+		margin: 0px;
+		overflow: hidden;
+		font-family: Monospace;
+		font-size: 30px;
+		position: absolute;
+	}
+	#info {
+		position: absolute;
+		top: 10px; width: 100%;
+		
+		padding: 5px;
+		text-align: center;
+		color: #ffff00;
+	}
+	strong{ color: #dd0000}
+	a{ color: #dd0000}
+</style>
+</head>
+
+<body>
+
+<div id="info">hw4<br/>
+Press <strong>Arrow Key</strong> to control</br>
+Click <a href="javascript: ChangeCameraMode()">Here</a> to change Camera Mode
+</div>
+
+<script src="js/three.min.js"></script>
+<script src="js/OrbitControls.js"></script>
+<script src="js/KeyboardState.js"></script>
+<script src="js/dat.gui.min.js"></script>
+<script src="wheel.js"></script>
+<script src="js/drive2.js"></script>
+<script src="js/HUD.js"></script>
+<script src="model.js"></script>
+<script src="js/MTLLoader.js"></script>
+<script src="js/OBJMTLLoader.js"></script>
+
+<script type="x-shader/x-fragment" id="fragmentShaderDepth">
+    uniform sampler2D texture;
+    varying vec2 vUV;
+
+    vec4 pack_depth(const in float depth) {
+
+        const vec4 bit_shift = vec4(256.0 * 256.0 * 256.0, 256.0 * 256.0, 256.0, 1.0);
+        const vec4 bit_mask = vec4(0.0, 1.0 / 256.0, 1.0 / 256.0, 1.0 / 256.0);
+        vec4 res = fract(depth * bit_shift);
+        res -= res.xxyz * bit_mask;
+        return res;
+
+    }
+
+    void main() {
+
+        vec4 pixel = texture2D(texture, vUV);
+
+        if (pixel.a < 0.5) discard;
+
+        gl_FragData[0] = pack_depth(gl_FragCoord.z);
+
+    }
+</script>
+<script type="x-shader/x-vertex" id="vertexShaderDepth">
+    varying vec2 vUV;
+
+    void main() {
+
+        vUV = 1.0 * uv;
+
+        vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+
+        gl_Position = projectionMatrix * mvPosition;
+
+    }
+</script>
+
+<script>
+
+var camera, scene, renderer, control;
+var keyboard = new KeyboardState();
+var power = false, brake = false, turnLeft = false, turnRight = false;
+var body, dt, handle, bottom;
+var clock = new THREE.Clock();
+var gcontrols, cameraMode = 1;
+
+init();
+animate();
+
+function init() {
+	renderer = new THREE.WebGLRenderer({antialias: true});
+    renderer.setSize(window.innerWidth, window.innerHeight);
+	renderer.setClearColor (0x555555);
+	renderer.shadowMapEnabled = true;
+	renderer.shadowMapType = THREE.PCFShadowMap;
+
+    document.body.appendChild(renderer.domElement);
+	
+    scene = new THREE.Scene();
+
+	//camera
+    camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 1, 10000);
+    //camera.position.z = 500;
+    scene.add(camera);
+	
+	//control = new THREE.OrbitControls(camera, renderer.domElement);///////////////
+	
+	//grid
+	var grid = new THREE.GridHelper (300, 30);
+	grid.setColors (0xff0000, 0xffffff);
+	//scene.add (grid);
+
+    //wheel
+    wheelInit();
+
+    //body
+    var bodyGeo = new THREE.BoxGeometry (35, 5, 50);
+    var bodyTex = THREE.ImageUtils.loadTexture ('images/body_tex.jpg');
+    var bodyBump = THREE.ImageUtils.loadTexture ('images/body_tex_bump.png');
+    var bodyMat = new THREE.MeshPhongMaterial ({color: 0x555555,
+    	map: bodyTex
+    	});
+    body = new THREE.Mesh (bodyGeo, bodyMat);
+
+    //body.add (tire);
+    //body.add (tire2);
+    body.castShadow = true;
+    body.receiveShadow = true;
+    scene.add (body);
+
+    //bottom
+    var bottomGeo = new THREE.SphereGeometry (4, 32, 32, 0, Math.PI*2, 0, Math.PI/2);
+    var bottomTex ;
+    var bottomMat = new THREE.MeshPhongMaterial ({color: 0x000000});
+    bottom = new THREE.Mesh (bottomGeo, bottomMat);
+    bottom.position.set (10, 2.5, 0);
+
+    bottom.castShadow = true;
+    bottom.receiveShadow = true;
+    body.add (bottom);
+
+    //handle
+    var handleGeo = new THREE.CylinderGeometry (2, 2, 60, 32);
+    var handleMat = new THREE.MeshPhongMaterial ({color: 0x000000});
+    handle = new THREE.Mesh (handleGeo, handleMat);
+    handle.position.set (10, 30, 0);
+
+    handle.rotation.order = 'YXZ';
+    handle.rotation.y = -Math.PI/2;
+
+    handle.castShadow = true;
+    handle.receiveShadow = true;
+    body.add (handle);
+
+    var handle2Geo = new THREE.CylinderGeometry (2, 2, 20, 32);
+    var handle2Mat = new THREE.MeshPhongMaterial ({color: 0x000000});
+    var handle2 = new THREE.Mesh (handle2Geo, handle2Mat);
+    handle2.rotation.z = Math.PI/2;
+    handle2.position.y = 30;
+
+    handle2.castShadow = true;
+    handle2.receiveShadow = true;
+
+    handle.add (handle2);
+
+    //mudguard
+    var mudguardGeo = new THREE.CylinderGeometry (22, 22, 8, 32, 1, true, 0, 135*Math.PI/180);
+    var mudguardBump = THREE.ImageUtils.loadTexture ('images/mudguard_bump.jpg');
+    var mudguardMat = new THREE.MeshPhongMaterial ({color: 0xff0000,
+    	bumpMap: mudguardBump,
+    	side: THREE.DoubleSide});
+    var mudguard = new THREE.Mesh (mudguardGeo, mudguardMat);
+    mudguard.rotation.z = Math.PI/2;
+    mudguard.rotation.y = -Math.PI/2;
+    mudguard.position.set (0, 3.5, -30);
+
+    //body.add (mudguard);
+
+    //ground
+    var groundGeo = new THREE.BoxGeometry (800, 1, 800, 60, 1, 60);
+    var groundTex = THREE.ImageUtils.loadTexture('images/wood.jpg');
+    var groundBump = THREE.ImageUtils.loadTexture('images/wood_bump.png');
+    var groundMat = new THREE.MeshPhongMaterial ({map: groundTex,
+    	bumpMap: groundBump
+    	});
+	groundTex.wrapS = groundTex.wrapT = THREE.RepeatWrapping;
+	groundTex.repeat.set (3, 3);
+	groundBump.wrapS = groundBump.wrapT = THREE.RepeatWrapping;
+	groundBump.repeat.set (3, 3);
+    var ground = new THREE.Mesh (groundGeo, groundMat);
+    ground.receiveShadow = true;
+
+    scene.add (ground);
+
+    //light
+    light = new THREE.SpotLight(0xffffff, 1.5);
+	light.position.set (0, 200, 0);
+	light.angle = Math.PI / 6;
+	light.castShadow = true;
+	light.shadowMapWidth = 2048;
+	light.shadowMapHeight = 2048;
+	light.shadowCameraNear = 1;
+	light.shadowCameraFar = 600;
+	light.shadowCameraFov = 60;
+	light.shadowDarkness = .7;
+	//light.shadowCameraVisible = true;
+	light.exponent = 10;
+    scene.add(light);
+    light.target = body;
+
+    var ambientLight = new THREE.AmbientLight (0x333333);
+	scene.add(ambientLight);
+
+	// dat.gui
+	gcontrols = {
+		speed: 1,
+		reset: function(){reset()}
+	};
+	var gui = new dat.GUI();
+	gui.add (gcontrols, 'speed', 1, 3).step(1).name('speed');
+	gui.add (gcontrols, 'reset').name('Reset All');
+
+	//HUD
+	HUDinit();
+
+	//model
+	ModelInit();
+
+    window.addEventListener('resize', onWindowResize, false);
+}
+
+function reset()
+{
+	pa = new THREE.Vector3(0, 0, -30);
+	pb = new THREE.Vector3(0, 0, 30);
+	pc = new THREE.Vector3(0,0,0);
+	sa = 0;
+	sb = 0;
+	k = 0;
+
+	body.position.set (0, 16, 0);
+	tire.position.set (0, 21, 0);
+	tire2.position.set (0, 21, 0);
+}
+
+function onWindowResize() {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+}
+
+function animate() {
+    requestAnimationFrame(animate);
+
+    //wheel animate
+    dt = clock.getDelta();
+    
+    /*tire.rotation.z -= speedL*dt*speed/3;
+    tire2.rotation.z -= speedR*dt*speed/3;
+
+    driveAnimate();
+    body.rotation.y = driveAngle;*/
+
+    HUDAnimate();
+    driveAnimate();
+
+    handle.rotation.x = xangle;
+    handle.rotation.z = zangle;
+    handle.position.set (-30*Math.sin(xangle)+10, 30, -30*Math.sin(zangle));
+	
+    render();
+	update();
+}
+
+function update() 
+{
+	//control.update();//////////////////
+	keyboard.update();
+
+	if (keyboard.pressed('up'))
+	{
+		power = true;
+	}
+	else
+	{
+		power = false;
+	}
+
+	if (keyboard.pressed('down'))
+	{
+		brake = true;
+	}
+	else
+	{
+		brake = false;
+	}
+
+	if (keyboard.pressed('left'))
+	{
+		turnLeft = true;
+	}
+	else
+	{
+		turnLeft = false
+	}
+
+	if (keyboard.pressed('right'))
+	{
+		turnRight = true;
+	}
+	else
+	{
+		turnRight = false;
+	}
+
+	driveUpdate(dt);
+
+	//camera
+	if (cameraMode == 1)
+	{
+		var relativeCameraOffset = new THREE.Vector3 (-250,150,0);
+		var cameraOffset = relativeCameraOffset.applyMatrix4( body.matrixWorld );
+		camera.position.x = cameraOffset.x;
+		camera.position.y = cameraOffset.y;
+		camera.position.z = cameraOffset.z;
+		camera.lookAt( body.position );
+	}
+	else
+	{
+		camera.position.set (body.position.x, 700, body.position.z);
+		camera.lookAt (body.position);
+	}
+}
+
+function ChangeCameraMode()
+{
+	cameraMode *= -1;
+}
+
+function render() 
+{
+	renderer.clear();
+	renderer.render(scene, camera);
+	renderer.render(sceneHUD, cameraHUD);
+}
+
+</script>
+
+</body>
+</html>
