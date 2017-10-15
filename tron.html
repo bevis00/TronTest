@@ -47,7 +47,7 @@
   var raycasterR5 = new THREE.Raycaster();
 
 
-  var tank, barrel, turret, ball, head;
+  var tank, barrel, ball, head;
   var bigBall;
   var tankP, avatarBody, v, vP = new THREE.Vector3(1, 0, 0);
 
@@ -164,7 +164,7 @@
       });
     tank = new THREE.Mesh (bodyGeo, bodyMat);
 
-    turret = new THREE.Object3D();
+    head = new THREE.Mesh(new THREE.SphereGeometry(3, 32, 32), new THREE.MeshBasicMaterial({color: 0x664c14}));
 
     var barrelGeo = new THREE.CylinderGeometry (1, 1, 10, 32);
     var barrelMat = new THREE.MeshPhongMaterial ({color: 0x000000});
@@ -172,10 +172,8 @@
     barrel.rotation.z = Math.PI/2;
     barrel.position.x = 5;
 
-    head = new THREE.Mesh(new THREE.SphereGeometry(3, 32, 32), new THREE.MeshBasicMaterial({color: 0x664c14}));
-
-    turret.add(head, barrel);
-    turret.position.y = 10;
+    head.add(barrel);
+    head.position.y = 10;
 
     //bottom
     var bottomGeo = new THREE.SphereGeometry (4, 32, 32, 0, Math.PI*2, 0, Math.PI/2);
@@ -196,7 +194,7 @@
     tank.add (handle);
 
 
-    tank.add(tire, tire2, turret);
+    tank.add(tire, tire2, head);
     scene.add(tank);
 
     ////////////////////////////////////////////////////////////////////////
@@ -255,7 +253,7 @@
 
       go += 3;
 
-      turret.remove(laser);
+      head.remove(laser);
       scene.remove(laserR, laserR2);
 
     }
@@ -264,7 +262,7 @@
 
       change += 0.035;
 
-      turret.remove(laser);
+      head.remove(laser);
       scene.remove(laserR, laserR2);
 
     }
@@ -273,7 +271,7 @@
 
       change += -0.035;
 
-      turret.remove(laser);
+      head.remove(laser);
       scene.remove(laserR, laserR2);
 
     }
@@ -283,11 +281,11 @@
       if(angle < Math.PI / 4){
 
           angle += 0.015;
-          turret.rotation.z = angle;
+          head.rotation.z = angle;
 
       }
 
-      turret.remove(laser);
+      head.remove(laser);
       scene.remove(laserR, laserR2);
 
     }
@@ -297,11 +295,11 @@
       if(angle > 0){
 
           angle -= 0.015;
-          turret.rotation.z = angle;
+          head.rotation.z = angle;
 
       }
 
-      turret.remove(laser);
+      head.remove(laser);
       scene.remove(laserR, laserR2);
 
     }
@@ -312,14 +310,14 @@
       laserR = makeLaserR();
       laserR2 = makeLaserR2();
 
-      turret.add(laser);
+      head.add(laser);
       scene.add(laserR, laserR2);
 
     }
 
     if (keyboard.up("L")) {
 
-      turret.remove(laser);
+      head.remove(laser);
       scene.remove(laserR, laserR2);
 
     }
