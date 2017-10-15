@@ -14,7 +14,7 @@ function Matrix4Update(newPos, newDir) {
 function moveOnNy() {
 
   var newPos = tank.localToWorld(new THREE.Vector3(go, 0, 0));
-  newPos.y = -75;
+  newPos.y = -71;
 
   var newDir = vP.normalize();
   newDir.applyAxisAngle(new THREE.Vector3(0, 1, 0), change);
@@ -31,7 +31,7 @@ function moveOnNy() {
 function moveOnPx() {
 
   var newPos = tank.localToWorld(new THREE.Vector3(go, 0, 0));
-  newPos.x = 75;
+  newPos.x = 71;
 
   var newDir = vP.normalize();
   newDir.applyAxisAngle(new THREE.Vector3(-1, 0, 0), change);
@@ -48,7 +48,7 @@ function moveOnPx() {
 function moveOnPy() {
 
   var newPos = tank.localToWorld(new THREE.Vector3(go, 0, 0));
-  newPos.y = 75;
+  newPos.y = 71;
 
   var newDir = vP.normalize();
   newDir.applyAxisAngle(new THREE.Vector3(0, -1, 0), change);
@@ -65,7 +65,7 @@ function moveOnPy() {
 function moveOnNx() {
 
   var newPos = tank.localToWorld(new THREE.Vector3(go, 0, 0));
-  newPos.x = -75;
+  newPos.x = -71;
 
   var newDir = vP.normalize();
   newDir.applyAxisAngle(new THREE.Vector3(1, 0, 0), change);
@@ -82,7 +82,7 @@ function moveOnNx() {
 function moveOnPz() {
 
   var newPos = tank.localToWorld(new THREE.Vector3(go, 0, 0));
-  newPos.z = 75;
+  newPos.z = 71;
 
   var newDir = vP.normalize();
   newDir.applyAxisAngle(new THREE.Vector3(0, 0, -1), change);
@@ -99,7 +99,7 @@ function moveOnPz() {
 function moveOnNz() {
 
   var newPos = tank.localToWorld(new THREE.Vector3(go, 0, 0));
-  newPos.z = -75;
+  newPos.z = -71;
 
   var newDir = vP.normalize();
   newDir.applyAxisAngle(new THREE.Vector3(0, 0, 1), change);
