@@ -294,8 +294,8 @@
 
       go += 3;
 
-      tire.rotation.z += 0.5;
-      //tire2.rotation.z += 0.5;
+      tire.rotation.z -= 0.5;
+      tire2.rotation.z -= 0.5;
 
       turret.remove(laser);
       scene.remove(laserR, laserR2);
@@ -307,7 +307,7 @@
       change += 0.035;
 
       tire.rotation.z -= 0.3;
-      //tire2.rotation.z += 0.3;
+      tire2.rotation.z += 0.3;
 
       turret.remove(laser);
       scene.remove(laserR, laserR2);
@@ -319,7 +319,7 @@
       change += -0.035;
 
       tire.rotation.z += 0.3;
-      //tire2.rotation.z -= 0.3;
+      tire2.rotation.z -= 0.3;
 
       turret.remove(laser);
       scene.remove(laserR, laserR2);
