@@ -32,45 +32,6 @@
 <script src="changePlane.js"></script>
 <script src="build.js"></script>
 <script src="cubemap.js"></script>
-<script src="wheel.js"></script>
-
-<script type="x-shader/x-fragment" id="fragmentShaderDepth">
-    uniform sampler2D texture;
-    varying vec2 vUV;
-
-    vec4 pack_depth(const in float depth) {
-
-        const vec4 bit_shift = vec4(256.0 * 256.0 * 256.0, 256.0 * 256.0, 256.0, 1.0);
-        const vec4 bit_mask = vec4(0.0, 1.0 / 256.0, 1.0 / 256.0, 1.0 / 256.0);
-        vec4 res = fract(depth * bit_shift);
-        res -= res.xxyz * bit_mask;
-        return res;
-
-    }
-
-    void main() {
-
-        vec4 pixel = texture2D(texture, vUV);
-
-        if (pixel.a < 0.5) discard;
-
-        gl_FragData[0] = pack_depth(gl_FragCoord.z);
-
-    }
-</script>
-<script type="x-shader/x-vertex" id="vertexShaderDepth">
-    varying vec2 vUV;
-
-    void main() {
-
-        vUV = 1.0 * uv;
-
-        vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
-
-        gl_Position = projectionMatrix * mvPosition;
-
-    }
-</script>
 
 <script>
 
@@ -86,7 +47,7 @@
   var raycasterR5 = new THREE.Raycaster();
 
 
-  var tank, barrel, ball, head;
+  var tank, barrel, turret, ball, head;
   var bigBall;
   var tankP, avatarBody, v, vP = new THREE.Vector3(1, 0, 0);
 
@@ -191,49 +152,21 @@
 
     //////////////////////////////////////////////////////////////////////////////
 
-    //wheel
-    wheelInit();
+    tank = buildTank();
+    turret = new THREE.Object3D();
 
-    //body
-    var bodyGeo = new THREE.BoxGeometry (10, 5, 10);
-    var bodyTex = THREE.ImageUtils.loadTexture ('images/body_tex.jpg');
-    var bodyBump = THREE.ImageUtils.loadTexture ('images/body_tex_bump.jpg');
-    var bodyMat = new THREE.MeshPhongMaterial ({color: 0x555555,
-      map: bodyTex
-      });
-    tank = new THREE.Mesh (bodyGeo, bodyMat);
+    barrel = new THREE.Mesh(new THREE.CylinderGeometry(1, 1, 10), new THREE.MeshBasicMaterial({
+      color: 0x222222
+    }));
+    barrel.position.x = 4;
+    barrel.rotation.z = -Math.PI / 2;
 
     head = new THREE.Mesh(new THREE.SphereGeometry(3, 32, 32), new THREE.MeshBasicMaterial({color: 0x664c14}));
 
-    var barrelGeo = new THREE.CylinderGeometry (1, 1, 10, 32);
-    var barrelMat = new THREE.MeshPhongMaterial ({color: 0x000000});
-    barrel = new THREE.Mesh (barrelGeo, barrelMat);
-    barrel.rotation.z = Math.PI/2;
-    barrel.position.x = 5;
+    turret.add(head, barrel);
+    turret.position.y = 5;
 
-    head.add(barrel);
-    head.position.y = 10;
-
-    //bottom
-    var bottomGeo = new THREE.SphereGeometry (4, 32, 32, 0, Math.PI*2, 0, Math.PI/2);
-    var bottomTex ;
-    var bottomMat = new THREE.MeshPhongMaterial ({color: 0x000000});
-    bottom = new THREE.Mesh (bottomGeo, bottomMat);
-    bottom.position.set (0, 2.5, 0);
-    tank.add (bottom);
-
-    //handle
-    var handleGeo = new THREE.CylinderGeometry (2, 2, 10, 32);
-    var handleMat = new THREE.MeshPhongMaterial ({color: 0x000000});
-    handle = new THREE.Mesh (handleGeo, handleMat);
-    handle.position.set (0, 5, 0);
-
-    handle.rotation.order = 'YXZ';
-    handle.rotation.y = -Math.PI/2;
-    tank.add (handle);
-
-
-    tank.add(tire, tire2, head);
+    tank.add(turret);
     scene.add(tank);
 
     ////////////////////////////////////////////////////////////////////////
@@ -292,7 +225,7 @@
 
       go += 3;
 
-      head.remove(laser);
+      turret.remove(laser);
       scene.remove(laserR, laserR2);
 
     }
@@ -301,7 +234,7 @@
 
       change += 0.035;
 
-      head.remove(laser);
+      turret.remove(laser);
       scene.remove(laserR, laserR2);
 
     }
@@ -310,7 +243,7 @@
 
       change += -0.035;
 
-      head.remove(laser);
+      turret.remove(laser);
       scene.remove(laserR, laserR2);
 
     }
@@ -320,11 +253,11 @@
       if(angle < Math.PI / 4){
 
           angle += 0.015;
-          head.rotation.z = angle;
+          turret.rotation.z = angle;
 
       }
 
-      head.remove(laser);
+      turret.remove(laser);
       scene.remove(laserR, laserR2);
 
     }
@@ -334,11 +267,11 @@
       if(angle > 0){
 
           angle -= 0.015;
-          head.rotation.z = angle;
+          turret.rotation.z = angle;
 
       }
 
-      head.remove(laser);
+      turret.remove(laser);
       scene.remove(laserR, laserR2);
 
     }
@@ -349,14 +282,14 @@
       laserR = makeLaserR();
       laserR2 = makeLaserR2();
 
-      head.add(laser);
+      turret.add(laser);
       scene.add(laserR, laserR2);
 
     }
 
     if (keyboard.up("L")) {
 
-      head.remove(laser);
+      turret.remove(laser);
       scene.remove(laserR, laserR2);
 
     }
