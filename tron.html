@@ -32,6 +32,45 @@
 <script src="changePlane.js"></script>
 <script src="build.js"></script>
 <script src="cubemap.js"></script>
+<script src="wheel.js"></script>
+
+<script type="x-shader/x-fragment" id="fragmentShaderDepth">
+    uniform sampler2D texture;
+    varying vec2 vUV;
+
+    vec4 pack_depth(const in float depth) {
+
+        const vec4 bit_shift = vec4(256.0 * 256.0 * 256.0, 256.0 * 256.0, 256.0, 1.0);
+        const vec4 bit_mask = vec4(0.0, 1.0 / 256.0, 1.0 / 256.0, 1.0 / 256.0);
+        vec4 res = fract(depth * bit_shift);
+        res -= res.xxyz * bit_mask;
+        return res;
+
+    }
+
+    void main() {
+
+        vec4 pixel = texture2D(texture, vUV);
+
+        if (pixel.a < 0.5) discard;
+
+        gl_FragData[0] = pack_depth(gl_FragCoord.z);
+
+    }
+</script>
+<script type="x-shader/x-vertex" id="vertexShaderDepth">
+    varying vec2 vUV;
+
+    void main() {
+
+        vUV = 1.0 * uv;
+
+        vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+
+        gl_Position = projectionMatrix * mvPosition;
+
+    }
+</script>
 
 <script>
 
@@ -152,21 +191,51 @@
 
     //////////////////////////////////////////////////////////////////////////////
 
-    tank = buildTank();
+    //wheel
+    wheelInit();
+
+    //body
+    var bodyGeo = new THREE.BoxGeometry (10, 5, 10);
+    var bodyTex = THREE.ImageUtils.loadTexture ('images/body_tex.jpg');
+    var bodyBump = THREE.ImageUtils.loadTexture ('images/body_tex_bump.jpg');
+    var bodyMat = new THREE.MeshPhongMaterial ({color: 0x555555,
+      map: bodyTex
+      });
+    tank = new THREE.Mesh (bodyGeo, bodyMat);
+
     turret = new THREE.Object3D();
 
-    barrel = new THREE.Mesh(new THREE.CylinderGeometry(1, 1, 10), new THREE.MeshBasicMaterial({
-      color: 0x222222
-    }));
-    barrel.position.x = 4;
-    barrel.rotation.z = -Math.PI / 2;
-
     head = new THREE.Mesh(new THREE.SphereGeometry(3, 32, 32), new THREE.MeshBasicMaterial({color: 0x664c14}));
+    head.position.y = 10;
+    turret.add(head);
 
-    turret.add(head, barrel);
-    turret.position.y = 5;
+    //bottom
+    var bottomGeo = new THREE.SphereGeometry (4, 32, 32, 0, Math.PI*2, 0, Math.PI/2);
+    var bottomTex ;
+    var bottomMat = new THREE.MeshPhongMaterial ({color: 0x000000});
+    bottom = new THREE.Mesh (bottomGeo, bottomMat);
+    bottom.position.set (0, 2.5, 0);
+    tank.add (bottom);
 
-    tank.add(turret);
+    //handle
+    var handleGeo = new THREE.CylinderGeometry (2, 2, 10, 32);
+    var handleMat = new THREE.MeshPhongMaterial ({color: 0x000000});
+    handle = new THREE.Mesh (handleGeo, handleMat);
+    handle.position.set (0, 5, 0);
+
+    handle.rotation.order = 'YXZ';
+    handle.rotation.y = -Math.PI/2;
+    tank.add (handle);
+
+    var barrelGeo = new THREE.CylinderGeometry (1, 1, 10, 32);
+    var barrelMat = new THREE.MeshPhongMaterial ({color: 0x000000});
+    barrel = new THREE.Mesh (barrelGeo, barrelMat);
+    barrel.rotation.z = Math.PI/2;
+    barrel.position.x = 5;
+    barrel.position.y = 10;
+    turret.add (barrel);
+
+    tank.add(tire, tire2, turret);
     scene.add(tank);
 
     ////////////////////////////////////////////////////////////////////////
