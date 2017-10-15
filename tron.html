@@ -290,6 +290,24 @@
     keyboard.update();
     raytest();
 
+    if (keyboard.pressed("W") && keyboard.pressed("A")) {
+
+      tire.rotation.z -= 0.2;
+
+      turret.remove(laser);
+      scene.remove(laserR, laserR2);
+
+    }
+
+    if (keyboard.pressed("W") && keyboard.pressed("D")) {
+
+      tire2.rotation.z -= 0.2;
+
+      turret.remove(laser);
+      scene.remove(laserR, laserR2);
+
+    }
+
     if (keyboard.pressed("W")) {
 
       go += 3;
