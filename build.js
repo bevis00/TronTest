@@ -84,12 +84,10 @@ function buildBrick2() {
 
 function buildBigBall() {
 
-  var ball= new THREE.Mesh(new THREE.SphereGeometry(40,32,32),new THREE.MeshLambertMaterial({
-    transparent:true,
-    opacity:0.7}));
-  ball.name="Breakout";
-  scene.add(ball);
-  pickables.push(ball);
+  bigBall = new THREE.Mesh(new THREE.SphereGeometry(40,32,32), material);
+  bigBall.name = "Breakout";
+  scene.add(bigBall);
+  pickables.push(bigBall);
 
 }
 

@@ -116,6 +116,8 @@
   var fire = true;
 
   var speed = 0.006;
+  var count = 0, cubeCamera1, cubeCamera2, material;
+
 
   init();
   animate();
@@ -174,6 +176,7 @@
     planes[5].rotation.y = Math.PI;
 
     //////////////////////////////////////////////////////////////////////////////
+
     buildLight();
 
     //wheel
@@ -225,6 +228,22 @@
 
     ////////////////////////////////////////////////////////////////////////
 
+    cubeCamera1 = new THREE.CubeCamera( 1, 1000, 256 );
+    cubeCamera1.renderTarget.texture.minFilter = THREE.LinearMipMapLinearFilter;
+    scene.add( cubeCamera1 );
+
+    cubeCamera2 = new THREE.CubeCamera( 1, 1000, 256 );
+    cubeCamera2.renderTarget.texture.minFilter = THREE.LinearMipMapLinearFilter;
+    scene.add( cubeCamera2 );
+
+    material = new THREE.MeshLambertMaterial( {
+        transparent:true,
+        opacity:0.7,
+        envMap: cubeCamera2.renderTarget.texture
+    } );
+
+    ////////////////////////////////////////////////////////////////////////
+
     ball = new THREE.Mesh(new THREE.SphereGeometry(0.9), new THREE.MeshBasicMaterial({
       color: 0xff0000,
       castShadow:true
@@ -253,6 +272,7 @@
     targetarr[5].position.set(myRand(-65,65),myRand(-65,65),55);
 
     /////////////////////////////////////////////////////////////////////////////
+
     buildWall();
     stats = new Stats();
     document.body.appendChild( stats.dom );
@@ -479,7 +499,23 @@
 
 
   function render() {
+
     stats.update();
+
+    bigBall.visible = false;
+
+    if ( count % 2 === 0 ) {
+      material.envMap = cubeCamera1.renderTarget.texture;
+      cubeCamera2.update( renderer, scene );
+    } else {
+        material.envMap = cubeCamera2.renderTarget.texture;
+        cubeCamera1.update( renderer, scene );
+    }
+      
+    count ++;
+
+    bigBall.visible = true;
+
     renderer.render(scene, camera);
 
   }
