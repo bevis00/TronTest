@@ -116,7 +116,7 @@
   var fire = true;
 
   var speed = 0.006;
-  var count = 0, cubeCamera1, cubeCamera2, material;
+  var count = 0, cubeCamera, material;
 
 
   init();
@@ -228,16 +228,12 @@
 
     ////////////////////////////////////////////////////////////////////////
 
-    cubeCamera1 = new THREE.CubeCamera( 1, 1000, 256 );
-    cubeCamera1.renderTarget.texture.minFilter = THREE.LinearMipMapLinearFilter;
-    scene.add( cubeCamera1 );
-
-    cubeCamera2 = new THREE.CubeCamera( 1, 1000, 256 );
-    cubeCamera2.renderTarget.texture.minFilter = THREE.LinearMipMapLinearFilter;
-    scene.add( cubeCamera2 );
+    cubeCamera = new THREE.CubeCamera( 1, 1000, 256 );
+    cubeCamera.renderTarget.texture.minFilter = THREE.LinearMipMapLinearFilter;
+    scene.add( cubeCamera );
 
     material = new THREE.MeshPhongMaterial( {
-        envMap: cubeCamera2.renderTarget.texture
+        envMap: cubeCamera.renderTarget.texture
     } );
 
     ////////////////////////////////////////////////////////////////////////
@@ -502,15 +498,8 @@
 
     bigBall.visible = false;
 
-    if ( count % 2 === 0 ) {
-      material.envMap = cubeCamera1.renderTarget.texture;
-      cubeCamera2.update( renderer, scene );
-    } else {
-        material.envMap = cubeCamera2.renderTarget.texture;
-        cubeCamera1.update( renderer, scene );
-    }
-      
-    count ++;
+    material.envMap = cubeCamera.renderTarget.texture;
+    cubeCamera.update( renderer, scene );
 
     bigBall.visible = true;
 
