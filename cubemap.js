@@ -1,7 +1,7 @@
 
 function loadCubemap() {
 
-  var path = "https://ojrock.github.io/tron/textures/galaxy/";
+  var path = "textures/galaxy/";
   var format = '.jpg';
   var urls = [
     path + 'px' + format, path + 'nx' + format,

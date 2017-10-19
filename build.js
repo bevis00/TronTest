@@ -7,7 +7,7 @@ function buildPlanes() {
   });
 
   var plane = new THREE.Mesh(new THREE.PlaneGeometry(150, 150, 32, 32), material);
-  
+
   return plane;
 
 }
@@ -95,19 +95,19 @@ function buildBigBall() {
 
 function buildLight() {
 
-  var pointLight1 = new THREE.PointLight( 0xffffff, 1, 150 );
+  var pointLight1 = new THREE.PointLight( 0xffffff, 1, 115 );
 	pointLight1.position.set( -37.5, 37.5, -37.5 );
 	scene.add( pointLight1 );
 
-  var pointLight2 = new THREE.PointLight( 0xffffff, 1, 150 );
+  var pointLight2 = new THREE.PointLight( 0xffffff, 1, 115 );
 	pointLight2.position.set( -37.5, 37.5, 37.5 );
 	scene.add( pointLight2 );
 
-  var pointLight3 = new THREE.PointLight( 0xffffff, 1, 150 );
+  var pointLight3 = new THREE.PointLight( 0xffffff, 1, 115 );
 	pointLight3.position.set( 37.5, -37.5, -37.5 );
 	scene.add( pointLight3 );
 
-  var pointLight4 = new THREE.PointLight( 0xffffff, 1, 150 );
+  var pointLight4 = new THREE.PointLight( 0xffffff, 1, 115 );
 	pointLight4.position.set( 37.5, -37.5, 37.5 );
 	scene.add( pointLight4 );
 
