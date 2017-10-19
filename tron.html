@@ -236,7 +236,7 @@
     cubeCamera2.renderTarget.texture.minFilter = THREE.LinearMipMapLinearFilter;
     scene.add( cubeCamera2 );
 
-    material = new THREE.MeshLambertMaterial( {
+    material = new THREE.MeshPhongMaterial( {
         envMap: cubeCamera2.renderTarget.texture
     } );
 
