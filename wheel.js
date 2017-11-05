@@ -1,8 +1,8 @@
 var tire = new THREE.Object3D();
 var tire2 = new THREE.Object3D();
 
-function createWheel(tire, size)
-{
+function createWheel(tire, size){
+
 	THREE.ImageUtils.crossOrigin = '';
     var colormap = THREE.ImageUtils.loadTexture('images/wheel_tex4.png');
     var colormap2 = THREE.ImageUtils.loadTexture('images/tire_tex.jpg');
@@ -17,7 +17,7 @@ function createWheel(tire, size)
         side: THREE.DoubleSide
     });
     var mesh = new THREE.Mesh(geometry, material);
-	colormap2.wrapS = colormap2.wrapT = THREE.RepeatWrapping; 
+	colormap2.wrapS = colormap2.wrapT = THREE.RepeatWrapping;
 	colormap2.repeat.set( 10, 1 );
     var mesh2 = new THREE.Mesh(new THREE.CylinderGeometry(size, size, (size/5)*2, 30, 1, true), // only side
     new THREE.MeshPhongMaterial({
@@ -25,7 +25,7 @@ function createWheel(tire, size)
         bumpMap: bumpmap2,
         side: THREE.DoubleSide
     }));
-    bumpmap2.wrapS = bumpmap2.wrapT = THREE.RepeatWrapping; 
+    bumpmap2.wrapS = bumpmap2.wrapT = THREE.RepeatWrapping;
     bumpmap2.repeat.set( 10, 1 );
 
     var uniforms = {

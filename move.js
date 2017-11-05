@@ -1,5 +1,5 @@
 
-function Matrix4Update(newPos, newDir) {
+function Matrix4Update(newPos, newDir, newMiniPos) {
 
   var localX = newDir.clone();
   var localY = new THREE.Vector3(changeX, changeY, changeZ);
@@ -9,6 +9,12 @@ function Matrix4Update(newPos, newDir) {
   tank.matrix.setPosition(newPos);
   tank.matrixAutoUpdate = false;
 
+  //////////////////////////////////////////////////////////////////////////////
+
+  miniAvatar.matrix.makeBasis(localX, localY, localZ);
+  miniAvatar.matrix.setPosition(newMiniPos);
+  miniAvatar.matrixAutoUpdate = false;
+
 }
 
 function moveOnNy() {
@@ -16,9 +22,12 @@ function moveOnNy() {
   var newPos = tank.localToWorld(new THREE.Vector3(go, 0, 0));
   newPos.y = -67;
 
+  var newMiniPos = newPos.clone();
+  newMiniPos.y = -75
+
   var newDir = vP.normalize();
   newDir.applyAxisAngle(new THREE.Vector3(0, 1, 0), change);
-  Matrix4Update(newPos, newDir);
+  Matrix4Update(newPos, newDir, newMiniPos);
 
   cameraOffset = tank.localToWorld(new THREE.Vector3(-45, 7, 0));
   camera.position.set(cameraOffset.x, cameraOffset.y, cameraOffset.z);
@@ -33,9 +42,12 @@ function moveOnPx() {
   var newPos = tank.localToWorld(new THREE.Vector3(go, 0, 0));
   newPos.x = 67;
 
+  var newMiniPos = newPos.clone();
+  newMiniPos.x = 75
+
   var newDir = vP.normalize();
   newDir.applyAxisAngle(new THREE.Vector3(-1, 0, 0), change);
-  Matrix4Update(newPos, newDir);
+  Matrix4Update(newPos, newDir, newMiniPos);
 
   cameraOffset = tank.localToWorld(new THREE.Vector3(-45, 7, 0));
   camera.position.set(cameraOffset.x, cameraOffset.y, cameraOffset.z);
@@ -50,9 +62,12 @@ function moveOnPy() {
   var newPos = tank.localToWorld(new THREE.Vector3(go, 0, 0));
   newPos.y = 67;
 
+  var newMiniPos = newPos.clone();
+  newMiniPos.y = 75
+
   var newDir = vP.normalize();
   newDir.applyAxisAngle(new THREE.Vector3(0, -1, 0), change);
-  Matrix4Update(newPos, newDir);
+  Matrix4Update(newPos, newDir, newMiniPos);
 
   cameraOffset = tank.localToWorld(new THREE.Vector3(-45, 7, 0));
   camera.position.set(cameraOffset.x, cameraOffset.y, cameraOffset.z);
@@ -67,9 +82,12 @@ function moveOnNx() {
   var newPos = tank.localToWorld(new THREE.Vector3(go, 0, 0));
   newPos.x = -67;
 
+  var newMiniPos = newPos.clone();
+  newMiniPos.x = -75
+
   var newDir = vP.normalize();
   newDir.applyAxisAngle(new THREE.Vector3(1, 0, 0), change);
-  Matrix4Update(newPos, newDir);
+  Matrix4Update(newPos, newDir, newMiniPos);
 
   cameraOffset = tank.localToWorld(new THREE.Vector3(-45, 7, 0));
   camera.position.set(cameraOffset.x, cameraOffset.y, cameraOffset.z);
@@ -84,9 +102,12 @@ function moveOnPz() {
   var newPos = tank.localToWorld(new THREE.Vector3(go, 0, 0));
   newPos.z = 67;
 
+  var newMiniPos = newPos.clone();
+  newMiniPos.z = 75
+
   var newDir = vP.normalize();
   newDir.applyAxisAngle(new THREE.Vector3(0, 0, -1), change);
-  Matrix4Update(newPos, newDir);
+  Matrix4Update(newPos, newDir, newMiniPos);
 
   cameraOffset = tank.localToWorld(new THREE.Vector3(-45, 7, 0));
   camera.position.set(cameraOffset.x, cameraOffset.y, cameraOffset.z);
@@ -101,9 +122,12 @@ function moveOnNz() {
   var newPos = tank.localToWorld(new THREE.Vector3(go, 0, 0));
   newPos.z = -67;
 
+  var newMiniPos = newPos.clone();
+  newMiniPos.z = -75
+
   var newDir = vP.normalize();
   newDir.applyAxisAngle(new THREE.Vector3(0, 0, 1), change);
-  Matrix4Update(newPos, newDir);
+  Matrix4Update(newPos, newDir, newMiniPos);
 
   cameraOffset = tank.localToWorld(new THREE.Vector3(-45, 7, 0));
   camera.position.set(cameraOffset.x, cameraOffset.y, cameraOffset.z);

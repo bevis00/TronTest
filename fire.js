@@ -120,7 +120,7 @@ function raytest() {
       if (intersectsR.length > 0) {
 
         //facePX
-        if (intersects[0].object.name === "plane0") {
+        if (intersectsR[0].object.name === "plane0") {
 
           var n = new THREE.Vector3(-1, 0, 0);
 
@@ -368,46 +368,13 @@ function fireMove() {
 
 function Targeting(){
 
-  if(ball.position.distanceTo(targetarr[0].position)<5){
-
-    targetarr[0].position.set(-55,myRand(-65,65),myRand(-65,65));
-    targetarr[0].rotation.x=myRand(0,3);
-
+  if(ball.position.distanceTo(target.position) < 5){
+    do{
+      target.position.set(myRand(-65,65),myRand(-65,65),myRand(-65,65));
+    }while(target.position.distanceTo(new THREE.Vector3(0,0,0) < 45 ));
+    target.rotation.x=myRand(0,3);
   }
 
-  if(ball.position.distanceTo(targetarr[1].position)<5){
-
-    targetarr[1].position.set(55,myRand(-65,65),myRand(-65,65));
-    targetarr[1].rotation.x=myRand(0,3);
-
-  }
-
-  if(ball.position.distanceTo(targetarr[2].position)<5){
-
-    targetarr[2].position.set(myRand(-65,65),-55,myRand(-65,65));
-    targetarr[2].rotation.x=myRand(0,3);
-
-  }
-
-  if(ball.position.distanceTo(targetarr[3].position)<5){
-
-    targetarr[3].position.set(myRand(-65,65),55,myRand(-65,65));
-    targetarr[3].rotation.x=myRand(0,3);
-
-  }
-
-  if(ball.position.distanceTo(targetarr[4].position)<5){
-
-    targetarr[4].position.set(myRand(-65,65),myRand(-65,65),-55);
-    targetarr[4].rotation.x=myRand(0,3);
-
-  }
-
-  if(ball.position.distanceTo(targetarr[5].position)<5){
-
-    targetarr[5].position.set(myRand(-65,65),myRand(-65,65),55);
-    targetarr[5].rotation.x=myRand(0,3);
-    
-  }
+  miniTarget.position.copy(target.position);
 
 }

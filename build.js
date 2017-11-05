@@ -12,6 +12,181 @@ function buildPlanes() {
 
 }
 
+function buildSkyBox() {
+
+  var materialArray = [];
+  var texture = new THREE.TextureLoader();
+  texture.setCrossOrigin('');
+  
+  materialArray.push(new THREE.MeshBasicMaterial( { 
+    map: texture.load ("textures/galaxy/px.jpg"),
+    side: THREE.BackSide
+  })); 
+  materialArray.push(new THREE.MeshBasicMaterial( { 
+    map: texture.load ("textures/galaxy/nx.jpg"),
+    side: THREE.BackSide
+  }));
+  materialArray.push(new THREE.MeshBasicMaterial( { 
+    map: texture.load ("textures/galaxy/py.jpg"),
+    side: THREE.BackSide
+  }));
+  materialArray.push(new THREE.MeshBasicMaterial( { 
+    map: texture.load ("textures/galaxy/ny.jpg"),
+    side: THREE.BackSide
+  }));
+  materialArray.push(new THREE.MeshBasicMaterial( { 
+    map: texture.load ("textures/galaxy/pz.jpg"),
+    side: THREE.BackSide
+  })); 
+  materialArray.push(new THREE.MeshBasicMaterial( { 
+    map: texture.load ("textures/galaxy/nz.jpg"),
+    side: THREE.BackSide
+  })); 
+  
+  var material = new THREE.MultiMaterial(materialArray);
+  
+  var skybox = new THREE.Mesh(new THREE.BoxGeometry(5000, 5000, 5000), material);
+
+  return skybox;
+
+}
+
+function buildMiniLinePlanes() {
+
+  var material = new THREE.LineBasicMaterial({
+    color: "red"
+  });
+
+  var geometry = new THREE.Geometry();
+  geometry.vertices.push(
+    new THREE.Vector3( 75, 70, 70 ),
+    new THREE.Vector3( 75, 70, -70 ),
+    new THREE.Vector3( 75, -70, -70 ),
+    new THREE.Vector3( 75, -70, 70 ),
+    new THREE.Vector3( 75, 70, 70 )
+  );
+
+  var pxLine = new THREE.Line( geometry, material );
+  scene2.add( pxLine );
+  
+  ////////////////////////////////////////////////////////////////////////
+  
+  var material = new THREE.LineDashedMaterial( {
+    color: "red",
+    dashSize: 10,
+    gapSize: 5
+  } );
+
+  var geometry = new THREE.Geometry();
+  geometry.vertices.push(
+    new THREE.Vector3( -75, 70, 70 ),
+    new THREE.Vector3( -75, 70, -70 ),
+    new THREE.Vector3( -75, -70, -70 ),
+    new THREE.Vector3( -75, -70, 70 ),
+    new THREE.Vector3( -75, 70, 70 )
+  );
+  geometry.computeLineDistances();
+
+  var nxLine = new THREE.Line( geometry, material );
+  scene2.add( nxLine );
+
+  ////////////////////////////////////////////////////////////////////////
+  
+  var material = new THREE.LineBasicMaterial({
+    color: 0x14ff00
+  });
+
+  var geometry = new THREE.Geometry();
+  geometry.vertices.push(
+    new THREE.Vector3( -70, 75, -70 ),
+    new THREE.Vector3( 70, 75, -70 ),
+    new THREE.Vector3( 70, 75, 70 ),
+    new THREE.Vector3( -70, 75, 70 ),
+    new THREE.Vector3( -70, 75, -70 )
+  );
+
+  var pyLine = new THREE.Line( geometry, material );
+  scene2.add( pyLine );
+  
+  ////////////////////////////////////////////////////////////////////////
+
+  var material = new THREE.LineDashedMaterial( {
+    color: 0x14ff00,
+    dashSize: 10,
+    gapSize: 5
+  } );
+
+  var geometry = new THREE.Geometry();
+  geometry.vertices.push(
+    new THREE.Vector3( -70, -75, -70 ),
+    new THREE.Vector3( 70, -75, -70 ),
+    new THREE.Vector3( 70, -75, 70 ),
+    new THREE.Vector3( -70, -75, 70 ),
+    new THREE.Vector3( -70, -75, -70)
+  );
+  geometry.computeLineDistances();
+
+  var nyLine = new THREE.Line( geometry, material );
+  scene2.add( nyLine );
+  
+  ////////////////////////////////////////////////////////////////////////
+  
+  var material = new THREE.LineBasicMaterial({
+    color: "blue"
+  });
+
+  var geometry = new THREE.Geometry();
+  geometry.vertices.push(
+    new THREE.Vector3( -70, 70, 75 ),
+    new THREE.Vector3( 70, 70, 75 ),
+    new THREE.Vector3( 70, -70, 75 ),
+    new THREE.Vector3( -70, -70, 75 ),
+    new THREE.Vector3( -70, 70, 75 )
+  );
+
+  var pzLine = new THREE.Line( geometry, material );
+  scene2.add( pzLine );
+  
+  ////////////////////////////////////////////////////////////////////////
+  
+  var material = new THREE.LineDashedMaterial( {
+    color: "blue",
+    dashSize: 10,
+    gapSize: 5
+  } );
+
+  var geometry = new THREE.Geometry();
+  geometry.vertices.push(
+    new THREE.Vector3( -70, 70, -75 ),
+    new THREE.Vector3( 70, 70, -75 ),
+    new THREE.Vector3( 70, -70, -75 ),
+    new THREE.Vector3( -70, -70, -75 ),
+    new THREE.Vector3( -70, 70, -75 )
+  );
+  geometry.computeLineDistances();
+
+  var nzLine = new THREE.Line( geometry, material );
+  scene2.add( nzLine );
+
+}
+
+function buildHintLine(){
+
+  var material = new THREE.LineBasicMaterial({
+    color: "red"
+  });
+
+  var geometry = new THREE.Geometry();
+  geometry.vertices.push(
+    head.localToWorld(new THREE.Vector3(0, 0, 0)),
+    targetTemp    
+  );
+
+  hintLine = new THREE.Line( geometry, material );
+  scene.add(hintLine);
+
+}
+
 function buildTank() {
 
   var tank = new THREE.Object3D();
@@ -35,6 +210,16 @@ function buildTarget(){
 
 }
 
+function buildMiniTarget(){
+
+  var miniTarget = new THREE.Mesh(new THREE.SphereGeometry(5), new THREE.MeshBasicMaterial({
+      color: 0xff0000,
+    }));
+
+  return miniTarget;
+
+}
+
 function buildBrick() {
 
   var materialArray = [];
@@ -54,7 +239,7 @@ function buildBrick() {
 
 
   var brick = new THREE.Mesh(new THREE.BoxGeometry(10, 6, 7), material);
-
+  brick.receiveShadow = true;
   return brick;
 
 }
@@ -77,8 +262,20 @@ function buildBrick2() {
   var material = new THREE.MeshFaceMaterial(materialArray);
 
   var brick = new THREE.Mesh(new THREE.BoxGeometry(5, 6, 7), material);
-
+  brick.receiveShadow = true;
   return brick;
+
+}
+
+function buildLightBall() {
+
+  ballLight = new THREE.PointLight( 0xff0000, 2, 50 );
+
+  ball = new THREE.Mesh(new THREE.SphereGeometry(0.9), new THREE.MeshLambertMaterial({
+      color: 0xff0000,
+    }));
+  ball.add(ballLight);
+  scene.add(ball);
 
 }
 
@@ -86,12 +283,16 @@ function buildBigBall() {
 
   bigBall = new THREE.Mesh(new THREE.SphereGeometry(40,32,32), material);
   bigBall.name = "Breakout";
-  scene.add(bigBall);
+  ball.visible = false;
   pickables.push(bigBall);
+  scene.add(bigBall);
 
 }
 
 function buildLight() {
+
+  var ambLight = new THREE.AmbientLight( 0x303030 ); // soft white light
+  scene.add( ambLight );
 
   var pointLight1 = new THREE.PointLight( 0xffffff, 1, 115 );
 	pointLight1.position.set( -37.5, 37.5, -37.5 );
@@ -109,15 +310,9 @@ function buildLight() {
 	pointLight4.position.set( 37.5, -37.5, 37.5 );
 	scene.add( pointLight4 );
 
-  var pointLightMid = new THREE.PointLight (0xffffff, 1, 150);
+  var pointLightMid = new THREE.PointLight (0xffffff, 1, 200);
   pointLightMid.position.set(0,0,0);
   pointLightMid.castShadow = true;
-  pointLightMid.shadow.camera.left = -80;
-  pointLightMid.shadow.camera.top = -80;
-  pointLightMid.shadow.camera.right = 80;
-  pointLightMid.shadow.camera.bottom = 80;
-  pointLightMid.shadow.camera.near = 1;
-  pointLightMid.shadow.camera.far = 1000;
   pointLightMid.shadow.mapSize.width = pointLightMid.shadow.mapSize.height = 1024;
   scene.add(pointLightMid);
   pointLightMid.shadow.bias = -.0001

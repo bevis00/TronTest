@@ -7,8 +7,24 @@ function changePlane(){
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   //faceNy, up = +Y = Vector3(0, 1, 0)
-  if (changeX === 0 && changeY === 1 && changeZ === 0 && detection.x <= 75 && detection.x >= -75 && detection.z <= 75 && detection.z >= -75)
+  if (changeX === 0 && changeY === 1 && changeZ === 0 && detection.x <= 75 && detection.x >= -75 && detection.z <= 75 && detection.z >= -75){
+
     moveOnNy();
+
+    if(camera.position.x > 74)
+      camera.position.x = 74;
+
+    if(camera.position.x < -74)
+      camera.position.x = -74;
+
+    if(camera.position.z > 74)
+      camera.position.z = 74;
+
+    if(camera.position.z < -74)
+      camera.position.z = -74;
+
+
+  }
 
   //change to facePx
   if (changeX === 0 && changeY === 1 && changeZ === 0 && detection.x > 75) {
@@ -69,8 +85,23 @@ function changePlane(){
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   //facePx, up = -x = Vector3(-1, 0, 0)
-  if (changeX === -1 && changeY === 0 && changeZ === 0 && detection.y <= 75 && detection.y >= -75 && detection.z <= 75 && detection.z >= -75)
+  if (changeX === -1 && changeY === 0 && changeZ === 0 && detection.y <= 75 && detection.y >= -75 && detection.z <= 75 && detection.z >= -75){
+
     moveOnPx();
+
+    if(camera.position.y > 74)
+      camera.position.y = 74;
+
+    if(camera.position.y < -74)
+      camera.position.y = -74;
+
+    if(camera.position.z > 74)
+      camera.position.z = 74;
+
+    if(camera.position.z < -74)
+      camera.position.z = -74;
+
+  }
 
   //change to facePy
   if (changeX === -1 && changeY === 0 && changeZ === 0 && detection.y > 75) {
@@ -131,8 +162,23 @@ function changePlane(){
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   //facePy, up = -Y = Vector3(0, -1, 0)
-  if (changeX === 0 && changeY === -1 && changeZ === 0 && detection.x <= 75 && detection.x >= -75 && detection.z <= 75 && detection.z >= -75)
+  if (changeX === 0 && changeY === -1 && changeZ === 0 && detection.x <= 75 && detection.x >= -75 && detection.z <= 75 && detection.z >= -75){
+
     moveOnPy();
+
+    if(camera.position.x > 74)
+      camera.position.x = 74;
+
+    if(camera.position.x < -74)
+      camera.position.x = -74;
+
+    if(camera.position.z > 74)
+      camera.position.z = 74;
+
+    if(camera.position.z < -74)
+      camera.position.z = -74;
+
+  }
 
   //change to faceNx
   if (changeX === 0 && changeY === -1 && changeZ === 0 && detection.x < -75) {
@@ -193,8 +239,23 @@ function changePlane(){
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   //faceNx, up = x = Vector3(1, 0, 0)
-  if (changeX === 1 && changeY === 0 && changeZ === 0 && detection.y <= 75 && detection.y >= -75 && detection.z <= 75 && detection.z >= -75)
+  if (changeX === 1 && changeY === 0 && changeZ === 0 && detection.y <= 75 && detection.y >= -75 && detection.z <= 75 && detection.z >= -75){
+
     moveOnNx();
+
+    if(camera.position.y > 74)
+      camera.position.y = 74;
+
+    if(camera.position.y < -74)
+      camera.position.y = -74;
+
+    if(camera.position.z > 74)
+      camera.position.z = 74;
+
+    if(camera.position.z < -74)
+      camera.position.z = -74;
+
+  }
 
   //change to faceNy
   if (changeX === 1 && changeY === 0 && changeZ === 0 && detection.y < -75) {
@@ -255,8 +316,23 @@ function changePlane(){
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   //faceNz, up = +z = Vector3(0, 0, 1)
-  if (changeX === 0 && changeY === 0 && changeZ === 1 && detection.y <= 75 && detection.y >= -75 && detection.x <= 75 && detection.x >= -75)
+  if (changeX === 0 && changeY === 0 && changeZ === 1 && detection.y <= 75 && detection.y >= -75 && detection.x <= 75 && detection.x >= -75){
+
     moveOnNz();
+
+    if(camera.position.x > 74)
+      camera.position.x = 74;
+
+    if(camera.position.x < -74)
+      camera.position.x = -74;
+
+    if(camera.position.y > 74)
+      camera.position.y = 74;
+
+    if(camera.position.y < -74)
+      camera.position.y = -74;
+    
+  }
 
   //change to facePy
   if (changeX === 0 && changeY === 0 && changeZ === 1 && detection.y > 75) {
@@ -317,8 +393,23 @@ function changePlane(){
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   //facePz, up = -z = Vector3(0, 0, -1)
-  if (changeX === 0 && changeY === 0 && changeZ === -1 && detection.y <= 75 && detection.y >= -75 && detection.x <= 75 && detection.x >= -75)
+  if (changeX === 0 && changeY === 0 && changeZ === -1 && detection.y <= 75 && detection.y >= -75 && detection.x <= 75 && detection.x >= -75){
+
     moveOnPz();
+
+    if(camera.position.x > 74)
+      camera.position.x = 74;
+
+    if(camera.position.x < -74)
+      camera.position.x = -74;
+
+    if(camera.position.y > 74)
+      camera.position.y = 74;
+
+    if(camera.position.y < -74)
+      camera.position.y = -74;
+
+  }
 
   //change to faceNy
   if (changeX === 0 && changeY === 0 && changeZ === -1 && detection.y < -75) {
