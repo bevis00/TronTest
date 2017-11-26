@@ -45,6 +45,22 @@
 <script src="cubemap.js"></script>
 <script src="wheel.js"></script>
 <script src="stats.js"></script>
+<!--
+<audio id="DiscWars" autoplay loop style="display:none">
+<source src="sounds/DiscWars.mp3" type='audio/mpeg'>
+</audio>
+-->
+<audio id="fireSound" style="display:none">
+<source src="sounds/fire.mp3" type='audio/mpeg'>
+</audio>
+
+<audio id="pickSound" style="display:none">
+<source src="sounds/pick.mp3" type='audio/mpeg'>
+</audio>
+
+<audio id="flySound" style="display:none">
+<source src="sounds/fly.mp3" type='audio/mpeg'>
+</audio>
 
 
 <script type="x-shader/x-fragment" id="fragmentShaderDepth">
@@ -115,7 +131,7 @@
   var pickables = [];
   var planes = [];
   var wallPx = [], wallNx = [], wallPy = [], wallNy = [], wallPz = [], wallNz = [];
-  var brick1, brick2;
+  var brickX1, brickX2;
 
   var intersects, intersectsR, intersectsR2, intersectsR3, intersectsR4, intersectsR5;
   var laser, laserR, laserR2;
@@ -131,14 +147,22 @@
   var count = 0, cubeCamera1, cubeCamera2, material;
 
   var miniAvatar = new THREE.Object3D();
-  var miniTarget, targetTemp = new THREE.Vector3(), flash = 0;
-  var hintLine, turn = false;
+  var miniTarget, targetTemp = new THREE.Vector3(), flash = 0, miniBall;
+  var motionHint = new THREE.Object3D(), turn = false;
+  var slow = false;
+  var fireSound, pickSound, flySound, DiscWars;
+  var spotLight;
 
 
   init();
   animate();
 
   function init() {
+
+    //DiscWars = document.getElementById ('DiscWars');
+    fireSound = document.getElementById ('fireSound');
+    pickSound = document.getElementById ('pickSound');
+    flySound = document.getElementById ('flySound');
 
     renderer = new THREE.WebGLRenderer();
     renderer.setSize(window.innerWidth, window.innerHeight);
@@ -153,8 +177,8 @@
 
     scene = new THREE.Scene();
 
-    var skyBox = buildSkyBox();
-    scene.add(skyBox);
+    var cubeMap = loadCubemap();
+    scene.background = cubeMap;
 
     camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 1000);
     camera.position.z = 50;
@@ -213,21 +237,21 @@
 
     }
 
-    planes[0].position.set(75, 0, 0);
+    planes[0].position.set(300, 0, 0);
     planes[0].rotation.y = Math.PI / 2;
 
-    planes[1].position.set(-75, 0, 0);
+    planes[1].position.set(-300, 0, 0);
     planes[1].rotation.y = -Math.PI / 2;
 
-    planes[2].position.set(0, 75, 0);
+    planes[2].position.set(0, 300, 0);
     planes[2].rotation.x = -Math.PI / 2;
 
-    planes[3].position.set(0, -75, 0)
+    planes[3].position.set(0, -300, 0)
     planes[3].rotation.x = Math.PI / 2;
 
-    planes[4].position.set(0, 0, 75);
+    planes[4].position.set(0, 0, 300);
 
-    planes[5].position.set(0, 0, -75);
+    planes[5].position.set(0, 0, -300);
     planes[5].rotation.y = Math.PI;
 
     //////////////////////////////////////////////////////////////////////////////
@@ -254,7 +278,7 @@
     barrel.position.x = 5;
     barrel.rotation.z = -Math.PI/2;
 
-    head = new THREE.Mesh(new THREE.SphereGeometry(3, 32, 32), new THREE.MeshBasicMaterial({color: 0x664c14}));
+    head = new THREE.Mesh(new THREE.SphereGeometry(3, 32, 32), new THREE.MeshLambertMaterial({color: 0x664c14}));
 
     turret.add(head, barrel);
     turret.position.y = 10;
@@ -305,13 +329,49 @@
     target.castShadow = true;
     do{
       target.position.set(myRand(-65,65),myRand(-65,65),myRand(-65,65));
-    }while(target.position.distanceTo(new THREE.Vector3(0,0,0) < 45 ));
+      target.rotation.x=myRand(0,3);
+    }while(target.position.distanceTo(new THREE.Vector3(0,0,0))< 47 );
 
     /////////////////////////////////////////////////////////////////////////////
 
     miniTarget = buildMiniTarget();
     miniTarget.position.copy(target.position);
     scene2.add(miniTarget);
+
+    /////////////////////////////////////////////////////////////////////////////
+
+    miniBall = buildMiniBall();
+    miniBall.position.copy(ball);
+    miniBall.visible = false;
+    scene2.add(miniBall);
+
+    /////////////////////////////////////////////////////////////////////////////
+
+    spotLight = new THREE.SpotLight( 0xffffff, 20, 54, 0.08 );
+    spotLight.target = head;
+    scene.add( spotLight );
+
+    /////////////////////////////////////////////////////////////////////////////
+
+    var texture = new THREE.TextureLoader();
+    texture.setCrossOrigin('');
+
+    var hint = new THREE.Mesh(new THREE.PlaneGeometry(41.15, 41.3), new THREE.MeshBasicMaterial({
+      map: texture.load('https://i.imgur.com/TUgFXJD.png'),
+      transparent: true
+    }));
+
+    //hint.rotation.x = -Math.PI/2;
+
+    hint.rotation.order = 'YXZ';
+    hint.rotation.y = -Math.PI/2;
+    hint.rotation.x = -Math.PI/2;
+     
+    hint.position.set(28, -7.5, 0);
+
+    motionHint.add(hint);
+    tank.add(motionHint);
+    
 
     /////////////////////////////////////////////////////////////////////////////
 
@@ -337,10 +397,10 @@
   function blink() {
 
     turn = !turn;
-      
-    if(turn) 
+
+    if(turn)
       miniTarget.material.color = new THREE.Color(0xff0000);
-    else 
+    else
       miniTarget.material.color = new THREE.Color(0xf49b42);
 
   }
@@ -360,7 +420,6 @@
 
       turret.remove(laser);
       scene.remove(laserR, laserR2);
-      scene.remove(hintLine);
 
     }
 
@@ -373,7 +432,6 @@
 
       turret.remove(laser);
       scene.remove(laserR, laserR2);
-      scene.remove(hintLine);
 
     }
 
@@ -386,7 +444,6 @@
 
       turret.remove(laser);
       scene.remove(laserR, laserR2);
-      scene.remove(hintLine);
 
     }
 
@@ -438,12 +495,12 @@
 
     if (keyboard.down("space")) {
 
-      targetTemp.copy(target.localToWorld(new THREE.Vector3(0, 0, 0))); 
+      targetTemp.copy(target.localToWorld(new THREE.Vector3(0, 0, 0)));
 
       if (changeX === -1 && changeY === 0 && changeZ === 0)
           targetTemp.x = 57;
 
-      if (changeX === 1 && changeY === 0 && changeZ === 0) 
+      if (changeX === 1 && changeY === 0 && changeZ === 0)
           targetTemp.x = -57;
 
       if (changeX === 0 && changeY === -1 && changeZ === 0)
@@ -458,17 +515,10 @@
       if (changeX === 0 && changeY === 0 && changeZ === 1)
           targetTemp.z = -57;
 
-      buildHintLine()
-
     }
 
-    if (keyboard.up("space")) {
 
-      scene.remove(hintLine);
-
-    }
-
-    if(tank.worldToLocal(ball.localToWorld(new THREE.Vector3(0, 0, 0))).x - 1 <= tank.position.x + 8 && tank.worldToLocal(ball.localToWorld(new THREE.Vector3(0, 0, 0))).x + 1 >= tank.position.x - 8 && tank.worldToLocal(ball.localToWorld(new THREE.Vector3(0, 0, 0))).y - 1 <= tank.position.y + 8 && tank.worldToLocal(ball.localToWorld(new THREE.Vector3(0, 0, 0))).y + 1 >= tank.position.y - 8 && tank.worldToLocal(ball.localToWorld(new THREE.Vector3(0, 0, 0))).z - 1 <= tank.position.z + 5.7 && tank.worldToLocal(ball.localToWorld(new THREE.Vector3(0, 0, 0))).z + 1 >= tank.position.z - 5.7 && fire === false){
+    if(tank.worldToLocal(ball.localToWorld(new THREE.Vector3(0, 0, 0))).x - 1 <= tank.position.x + 9 && tank.worldToLocal(ball.localToWorld(new THREE.Vector3(0, 0, 0))).x + 1 >= tank.position.x - 9 && tank.worldToLocal(ball.localToWorld(new THREE.Vector3(0, 0, 0))).y - 1 <= tank.position.y + 9 && tank.worldToLocal(ball.localToWorld(new THREE.Vector3(0, 0, 0))).y + 1 >= tank.position.y - 9 && tank.worldToLocal(ball.localToWorld(new THREE.Vector3(0, 0, 0))).z - 1 <= tank.position.z + 6.7 && tank.worldToLocal(ball.localToWorld(new THREE.Vector3(0, 0, 0))).z + 1 >= tank.position.z - 6.7 && fire === false){
 
       if(ball.visible === true)
         head.material.color = new THREE.Color(0xffff00);
@@ -476,7 +526,11 @@
       if (keyboard.down("O")) {
 
         ball.visible = false;
+        ball.position.set(0, 0, 0);
+        miniBall.visible = false;
         fire = true;
+        fireStart = false;
+        pickSound.play();
 
       }
 
@@ -498,7 +552,12 @@
         uu = 0;
         speed = 0.006;
         ball.material.color = new THREE.Color(0xff0000);
+        ball.material.emissive = new THREE.Color(0xff0000);
         ballLight.color = new THREE.Color(0xff0000);
+        fireSound.play();
+
+        miniBall.position.copy(ball.position);
+        miniBall.visible = true;
 
       }
 
@@ -507,72 +566,258 @@
     if(fireStart){
 
       uu += speed;
+      flySound.play();
 
       if(uu <= 1)
         ball.position.copy(curve.getPointAt (uu));
 
       for (var i = 0; i < 362; i++) {
 
-          if (ball.position.z > wallPx[i].position.z - 6 && ball.position.z < wallPx[i].position.z + 6 && ball.position.y > wallPx[i].position.y - 3.6 && ball.position.y < wallPx[i].position.y + 3.6 && ball.position.x > wallPx[i].position.x - 4 && speed > 0.002)
+          if (ball.position.z > wallPx[i].position.z - 6 && ball.position.z < wallPx[i].position.z + 6 && ball.position.y > wallPx[i].position.y - 3.6 && ball.position.y < wallPx[i].position.y + 3.6 && ball.position.x > wallPx[i].position.x - 4  && ball.position.x < wallPx[i].position.x + 4 && speed > 0.0035 && wallPx[i].visible === true){
             wallPx[i].visible = false;
+            slow = true;
+          }
 
-         if (ball.position.z > wallNx[i].position.z - 6 && ball.position.z < wallNx[i].position.z + 6 && ball.position.y > wallNx[i].position.y - 3.6 && ball.position.y < wallNx[i].position.y + 3.6 && ball.position.x < wallNx[i].position.x + 4 && speed > 0.002)
+          if (ball.position.z > wallNx[i].position.z - 6 && ball.position.z < wallNx[i].position.z + 6 && ball.position.y > wallNx[i].position.y - 3.6 && ball.position.y < wallNx[i].position.y + 3.6 && ball.position.x < wallNx[i].position.x + 4 && ball.position.x > wallNx[i].position.x - 4 && speed > 0.0035 && wallNx[i].visible === true){
             wallNx[i].visible = false;
+            slow = true;
+          }
 
-        if (ball.position.x > wallPy[i].position.x - 6 && ball.position.x < wallPy[i].position.x + 6 && ball.position.z > wallPy[i].position.z - 3.6 && ball.position.z < wallPy[i].position.z + 3.6 && ball.position.y > wallPy[i].position.y - 4 && speed > 0.002)
+          if (ball.position.x > wallPy[i].position.x - 6 && ball.position.x < wallPy[i].position.x + 6 && ball.position.z > wallPy[i].position.z - 3.6 && ball.position.z < wallPy[i].position.z + 3.6 && ball.position.y > wallPy[i].position.y - 4 && ball.position.y < wallPy[i].position.y + 4 && speed > 0.0035 && wallPy[i].visible === true){
             wallPy[i].visible = false;
+            slow = true;
+          }
 
-        if (ball.position.x > wallNy[i].position.x - 6 && ball.position.x < wallNy[i].position.x + 6 && ball.position.z > wallNy[i].position.z - 3.6 && ball.position.z < wallNy[i].position.z + 3.6 && ball.position.y < wallNy[i].position.y + 4 && speed > 0.002)
+          if (ball.position.x > wallNy[i].position.x - 6 && ball.position.x < wallNy[i].position.x + 6 && ball.position.z > wallNy[i].position.z - 3.6 && ball.position.z < wallNy[i].position.z + 3.6 && ball.position.y < wallNy[i].position.y + 4 && ball.position.y > wallNy[i].position.y - 4 && speed > 0.0035 && wallNy[i].visible === true){
             wallNy[i].visible = false;
+            slow = true;
+          }
 
-        if (ball.position.x > wallPz[i].position.x - 6 && ball.position.x < wallPz[i].position.x + 6 && ball.position.y > wallPz[i].position.y - 3.6 && ball.position.y < wallPz[i].position.y + 3.6 && ball.position.z > wallPz[i].position.z - 4 && speed > 0.002)
+          if (ball.position.x > wallPz[i].position.x - 6 && ball.position.x < wallPz[i].position.x + 6 && ball.position.y > wallPz[i].position.y - 3.6 && ball.position.y < wallPz[i].position.y + 3.6 && ball.position.z > wallPz[i].position.z - 4 && ball.position.z < wallPz[i].position.z + 4 && speed > 0.0035 && wallPz[i].visible === true){
             wallPz[i].visible = false;
+            slow = true;
+          }
 
-        if (ball.position.x > wallNz[i].position.x - 6 && ball.position.x < wallNz[i].position.x + 6 && ball.position.y > wallNz[i].position.y - 3.6 && ball.position.y < wallNz[i].position.y + 3.6 && ball.position.z < wallNz[i].position.z + 4 && speed > 0.002)
+          if (ball.position.x > wallNz[i].position.x - 6 && ball.position.x < wallNz[i].position.x + 6 && ball.position.y > wallNz[i].position.y - 3.6 && ball.position.y < wallNz[i].position.y + 3.6 && ball.position.z < wallNz[i].position.z + 4 && ball.position.z > wallNz[i].position.z - 4 && speed > 0.0035 && wallNz[i].visible === true){
             wallNz[i].visible = false;
+            slow = true;
+          }
 
       }
 
-        for (var i = 362; i < 388; i++) {
+      for (var i = 362; i < 388; i++) {
 
-          if (ball.position.z > wallPx[i].position.z - 3 && ball.position.z < wallPx[i].position.z + 3 && ball.position.y > wallPx[i].position.y - 3.6 && ball.position.y < wallPx[i].position.y + 3.6 && ball.position.x > wallPx[i].position.x - 4)
-            wallPx[i].visible = false;
-
-          if (ball.position.z > wallNx[i].position.z - 3 && ball.position.z < wallNx[i].position.z + 3 && ball.position.y > wallNx[i].position.y - 3.6 && ball.position.y < wallNx[i].position.y + 3.6 && ball.position.x < wallNx[i].position.x + 4)
-            wallNx[i].visible = false;
-
-          if (ball.position.x > wallPy[i].position.x - 3 && ball.position.x < wallPy[i].position.x + 3 && ball.position.z > wallPy[i].position.z - 3.6 && ball.position.z < wallPy[i].position.z + 3.6 && ball.position.y > wallPy[i].position.y - 4)
-            wallPy[i].visible = false;
-
-          if (ball.position.x > wallNy[i].position.x - 3 && ball.position.x < wallNy[i].position.x + 3 && ball.position.z > wallNy[i].position.z - 3.6 && ball.position.z < wallNy[i].position.z + 3.6 && ball.position.y < wallNy[i].position.y + 4)
-            wallNy[i].visible = false;
-
-          if (ball.position.x > wallPz[i].position.x - 3 && ball.position.x < wallPz[i].position.x + 3 && ball.position.y > wallPz[i].position.y - 3.6 && ball.position.y < wallPz[i].position.y + 3.6 && ball.position.z > wallPz[i].position.z - 4)
-            wallPz[i].visible = false;
-
-          if (ball.position.x > wallNz[i].position.x - 3 && ball.position.x < wallNz[i].position.x + 3 && ball.position.y > wallNz[i].position.y - 3.6 && ball.position.y < wallNz[i].position.y + 3.6 && ball.position.z < wallNz[i].position.z + 4)
-            wallNz[i].visible = false;
-
+        if (ball.position.z > wallPx[i].position.z - 3 && ball.position.z < wallPx[i].position.z + 3 && ball.position.y > wallPx[i].position.y - 3.6 && ball.position.y < wallPx[i].position.y + 3.6 && ball.position.x > wallPx[i].position.x - 4 && ball.position.x < wallPx[i].position.x + 4 && speed > 0.0035 && wallPx[i].visible === true){
+          wallPx[i].visible = false;
+          slow = true;
         }
 
+        if (ball.position.z > wallNx[i].position.z - 3 && ball.position.z < wallNx[i].position.z + 3 && ball.position.y > wallNx[i].position.y - 3.6 && ball.position.y < wallNx[i].position.y + 3.6 && ball.position.x < wallNx[i].position.x + 4 && ball.position.x > wallNx[i].position.x - 4 && speed > 0.0035 && wallNx[i].visible === true){
+          wallNx[i].visible = false;
+          slow = true;
+        }
 
-      if (ball.position.x + 1 >= 75 || ball.position.x - 1 <= -75 || ball.position.y + 1 >= 75 || ball.position.y - 1 < -75 || ball.position.z + 1 > 75 || ball.position.z - 1 < -75)
-        if(speed > 0.0015)
-          speed -= .0003;
+        if (ball.position.x > wallPy[i].position.x - 3 && ball.position.x < wallPy[i].position.x + 3 && ball.position.z > wallPy[i].position.z - 3.6 && ball.position.z < wallPy[i].position.z + 3.6 && ball.position.y > wallPy[i].position.y - 4 && ball.position.y < wallPy[i].position.y + 4 && speed > 0.0035 && wallPy[i].visible === true){
+          wallPy[i].visible = false;
+          slow = true;
+        }
 
-      if(speed < 0.002){
+        if (ball.position.x > wallNy[i].position.x - 3 && ball.position.x < wallNy[i].position.x + 3 && ball.position.z > wallNy[i].position.z - 3.6 && ball.position.z < wallNy[i].position.z + 3.6 && ball.position.y < wallNy[i].position.y + 4 && ball.position.y > wallNy[i].position.y - 4 && speed > 0.0035 && wallNy[i].visible === true){
+          wallNy[i].visible = false;
+          slow = true;
+        }
+
+        if (ball.position.x > wallPz[i].position.x - 3 && ball.position.x < wallPz[i].position.x + 3 && ball.position.y > wallPz[i].position.y - 3.6 && ball.position.y < wallPz[i].position.y + 3.6 && ball.position.z > wallPz[i].position.z - 4 && ball.position.z < wallPz[i].position.z + 4 && speed > 0.0035 && wallPz[i].visible === true){
+          wallPz[i].visible = false;
+          slow = true;
+        }
+
+        if (ball.position.x > wallNz[i].position.x - 3 && ball.position.x < wallNz[i].position.x + 3 && ball.position.y > wallNz[i].position.y - 3.6 && ball.position.y < wallNz[i].position.y + 3.6 && ball.position.z < wallNz[i].position.z + 4 && ball.position.z > wallNz[i].position.z - 4 && speed > 0.0035 && wallNz[i].visible === true){
+          wallNz[i].visible = false;
+          slow = true;
+        }
+
+      }
+
+      if( ball.position.distanceTo( new THREE.Vector3(0,0,0) ) < 40 )
+        slow = true;
+
+
+      if (slow)
+        if(speed > 0.0029)
+          speed -= .0005;
+
+      if(speed < 0.0035){
 
         ball.material.color = new THREE.Color(0x0000ff);
+        ball.material.emissive = new THREE.Color(0x0000ff);
         ballLight.color = new THREE.Color(0x0000ff);
 
       }
 
+      if(ball.position.x > 250 || ball.position.y > 250 || ball.position.z > 250 || ball.position.x < -250 || ball.position.y < -250 || ball.position.z < -250){
+
+        var face = Math.floor(Math.random()*6);
+        speed = 0;
+        ball.material.color = new THREE.Color(0x0000ff);
+        ball.material.emissive = new THREE.Color(0x0000ff);
+        ballLight.color = new THREE.Color(0x0000ff);
+        fireStart = false;
+
+        if(face === 0){
+
+          do{
+
+            face = Math.floor(Math.random()*388);
+
+          }while(wallPx[face].visible === false);
+
+          ball.position.set(wallPx[face].position.x - 4.4, wallPx[face].position.y, wallPx[face].position.z);
+
+        }
+
+        if(face === 1){
+
+          do{
+
+            face = Math.floor(Math.random()*388);
+
+          }while(wallNx[face].visible === false);
+
+          ball.position.set(wallNx[face].position.x + 4.4, wallNx[face].position.y, wallNx[face].position.z);
+
+        }
+
+        if(face === 2){
+
+          do{
+
+            face = Math.floor(Math.random()*388);
+
+          }while(wallPy[face].visible === false);
+
+          ball.position.set(wallPy[face].position.x, wallPy[face].position.y - 4.4, wallPy[face].position.z);
+
+        }
+
+        if(face === 3){
+
+          do{
+
+            face = Math.floor(Math.random()*388);
+
+          }while(wallNy[face].visible === false);
+
+          ball.position.set(wallNy[face].position.x, wallNy[face].position.y + 4.4, wallNy[face].position.z);
+
+        }
+
+        if(face === 4){
+
+          do{
+
+            face = Math.floor(Math.random()*388);
+
+          }while(wallPz[face].visible === false);
+
+          ball.position.set(wallPz[face].position.x, wallPz[face].position.y, wallPz[face].position.z - 4.4);
+
+        }
+
+        if(face === 5){
+
+          do{
+
+            face = Math.floor(Math.random()*388);
+
+          }while(wallNz[face].visible === false);
+
+          ball.position.set(wallNz[face].position.x, wallNz[face].position.y, wallNz[face].position.z + 4.4);
+
+        }
+
+      }
 
       if(uu > 1){
 
         if(ball.position.distanceTo( new THREE.Vector3(0,0,0) ) < 41  && ball.position.distanceTo( new THREE.Vector3() ) > 39){
-          ball.position.copy(tank.localToWorld( new THREE.Vector3(0,0,0) ) );
+
+          var face = Math.floor(Math.random()*6);
+
+          if(face === 0){
+
+          do{
+
+            face = Math.floor(Math.random()*388);
+
+          }while(wallPx[face].visible === false);
+
+          ball.position.set(wallPx[face].position.x - 4.4, wallPx[face].position.y, wallPx[face].position.z);
+
         }
+
+        if(face === 1){
+
+          do{
+
+            face = Math.floor(Math.random()*388);
+
+          }while(wallNx[face].visible === false);
+
+          ball.position.set(wallNx[face].position.x + 4.4, wallNx[face].position.y, wallNx[face].position.z);
+
+        }
+
+        if(face === 2){
+
+          do{
+
+            face = Math.floor(Math.random()*388);
+
+          }while(wallPy[face].visible === false);
+
+          ball.position.set(wallPy[face].position.x, wallPy[face].position.y - 4.4, wallPy[face].position.z);
+
+        }
+
+        if(face === 3){
+
+          do{
+
+            face = Math.floor(Math.random()*388);
+
+          }while(wallNy[face].visible === false);
+
+          ball.position.set(wallNy[face].position.x, wallNy[face].position.y + 4.4, wallNy[face].position.z);
+
+        }
+
+        if(face === 4){
+
+          do{
+
+            face = Math.floor(Math.random()*388);
+
+          }while(wallPz[face].visible === false);
+
+          ball.position.set(wallPz[face].position.x, wallPz[face].position.y, wallPz[face].position.z - 4.4);
+
+        }
+
+        if(face === 5){
+
+          do{
+
+            face = Math.floor(Math.random()*388);
+
+          }while(wallNz[face].visible === false);
+
+          ball.position.set(wallNz[face].position.x, wallNz[face].position.y, wallNz[face].position.z + 4.4);
+
+        }
+
+        }
+
         dataPoints = [];
         fireStart = false;
         uu = 0;
@@ -582,10 +827,14 @@
 
     }
 
+    miniBall.position.copy(ball.position);
     changePlane();
+    spotLight.position.set( tank.localToWorld(new THREE.Vector3(-45, 7, 0)).x, tank.localToWorld(new THREE.Vector3(-45, 7, 0)).y, tank.localToWorld(new THREE.Vector3(-45, 7, 0)).z );
     go = 0;
     change = 0;
+    slow = false;
     Targeting();
+    
     requestAnimationFrame(animate);
     render();
 

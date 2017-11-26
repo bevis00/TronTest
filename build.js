@@ -6,48 +6,9 @@ function buildPlanes() {
     visible:false
   });
 
-  var plane = new THREE.Mesh(new THREE.PlaneGeometry(150, 150, 32, 32), material);
+  var plane = new THREE.Mesh(new THREE.PlaneGeometry(600, 600, 32, 32), material);
 
   return plane;
-
-}
-
-function buildSkyBox() {
-
-  var materialArray = [];
-  var texture = new THREE.TextureLoader();
-  texture.setCrossOrigin('');
-  
-  materialArray.push(new THREE.MeshBasicMaterial( { 
-    map: texture.load ("textures/galaxy/px.jpg"),
-    side: THREE.BackSide
-  })); 
-  materialArray.push(new THREE.MeshBasicMaterial( { 
-    map: texture.load ("textures/galaxy/nx.jpg"),
-    side: THREE.BackSide
-  }));
-  materialArray.push(new THREE.MeshBasicMaterial( { 
-    map: texture.load ("textures/galaxy/py.jpg"),
-    side: THREE.BackSide
-  }));
-  materialArray.push(new THREE.MeshBasicMaterial( { 
-    map: texture.load ("textures/galaxy/ny.jpg"),
-    side: THREE.BackSide
-  }));
-  materialArray.push(new THREE.MeshBasicMaterial( { 
-    map: texture.load ("textures/galaxy/pz.jpg"),
-    side: THREE.BackSide
-  })); 
-  materialArray.push(new THREE.MeshBasicMaterial( { 
-    map: texture.load ("textures/galaxy/nz.jpg"),
-    side: THREE.BackSide
-  })); 
-  
-  var material = new THREE.MultiMaterial(materialArray);
-  
-  var skybox = new THREE.Mesh(new THREE.BoxGeometry(5000, 5000, 5000), material);
-
-  return skybox;
 
 }
 
@@ -170,23 +131,6 @@ function buildMiniLinePlanes() {
 
 }
 
-function buildHintLine(){
-
-  var material = new THREE.LineBasicMaterial({
-    color: "red"
-  });
-
-  var geometry = new THREE.Geometry();
-  geometry.vertices.push(
-    head.localToWorld(new THREE.Vector3(0, 0, 0)),
-    targetTemp    
-  );
-
-  hintLine = new THREE.Line( geometry, material );
-  scene.add(hintLine);
-
-}
-
 function buildTank() {
 
   var tank = new THREE.Object3D();
@@ -204,7 +148,8 @@ function buildTank() {
 function buildTarget(){
 
   var target = new THREE.Mesh(new THREE.CylinderGeometry(3,3,1.5,35),new THREE.MeshBasicMaterial({
-    color: 0xf7ffaa}));
+    color: 0xf7ffaa
+  }));
 
   return target;
 
@@ -212,8 +157,8 @@ function buildTarget(){
 
 function buildMiniTarget(){
 
-  var miniTarget = new THREE.Mesh(new THREE.SphereGeometry(5), new THREE.MeshBasicMaterial({
-      color: 0xff0000,
+  var miniTarget = new THREE.Mesh(new THREE.SphereGeometry(10), new THREE.MeshBasicMaterial({
+      color: 0xff0000
     }));
 
   return miniTarget;
@@ -269,11 +214,12 @@ function buildBrick2() {
 
 function buildLightBall() {
 
-  ballLight = new THREE.PointLight( 0xff0000, 2, 50 );
+  ballLight = new THREE.PointLight( 0xff0000, 7, 70 );
 
   ball = new THREE.Mesh(new THREE.SphereGeometry(0.9), new THREE.MeshLambertMaterial({
-      color: 0xff0000,
-    }));
+      color: 0xff0000, 
+      emissive: 0xff0000
+  }));
   ball.add(ballLight);
   scene.add(ball);
 
@@ -286,6 +232,16 @@ function buildBigBall() {
   ball.visible = false;
   pickables.push(bigBall);
   scene.add(bigBall);
+
+}
+
+function buildMiniBall(){
+
+  var miniBall = new THREE.Mesh(new THREE.SphereGeometry(5), new THREE.MeshBasicMaterial({
+      color: 0x0000ff
+  }));
+
+  return miniBall;
 
 }
 
@@ -321,14 +277,26 @@ function buildLight() {
 
 function buildWall(){
 
-  brick1 = buildBrick();
-  brick2 = buildBrick2();
+  brickX1 = buildBrick();
+  brickX1.material[4].color = new THREE.Color(0xefacac);
+  brickX2 = buildBrick2();
+  brickX2.material[4].color = new THREE.Color(0xefacac);
+
+  brickY1 = buildBrick();
+  brickY1.material[4].color = new THREE.Color(0xacefad);
+  brickY2 = buildBrick2();
+  brickY2.material[4].color = new THREE.Color(0xacefad);
+
+  brickZ1 = buildBrick();
+  brickZ1.material[4].color = new THREE.Color(0xaeacef);
+  brickZ2 = buildBrick2();
+  brickZ2.material[4].color = new THREE.Color(0xaeacef);
 
   for(var i = 0; i < 362; i++)
-    wallPx[i] = brick1.clone();
+    wallPx[i] = brickX1.clone();
 
   for(var i = 362; i < 388; i++)
-    wallPx[i] = brick2.clone();
+    wallPx[i] = brickX2.clone();
 
   for (var i = 0; i < 388; i++) {
 
@@ -372,10 +340,10 @@ function buildWall(){
   /////////////////////////////////////////////////////////////////////////////
 
   for(var i = 0; i < 362; i++)
-    wallNx[i] = brick1.clone();
+    wallNx[i] = brickX1.clone();
 
   for(var i = 362; i < 388; i++)
-    wallNx[i] = brick2.clone();
+    wallNx[i] = brickX2.clone();
 
   for (var i = 0; i < 388; i++) {
 
@@ -420,10 +388,10 @@ function buildWall(){
   /////////////////////////////////////////////////////////////////////////////
 
   for(var i = 0; i < 362; i++)
-    wallPy[i] = brick1.clone();
+    wallPy[i] = brickY1.clone();
 
   for(var i = 362; i < 388; i++)
-    wallPy[i] = brick2.clone();
+    wallPy[i] = brickY2.clone();
 
   for (var i = 0; i < 388; i++) {
 
@@ -468,10 +436,10 @@ function buildWall(){
   /////////////////////////////////////////////////////////////////////////////
 
   for(var i = 0; i < 362; i++)
-    wallNy[i] = brick1.clone();
+    wallNy[i] = brickY1.clone();
 
   for(var i = 362; i < 388; i++)
-    wallNy[i] = brick2.clone();
+    wallNy[i] = brickY2.clone();
 
   for (var i = 0; i < 388; i++) {
 
@@ -516,10 +484,10 @@ function buildWall(){
   /////////////////////////////////////////////////////////////////////////////
 
   for(var i = 0; i < 362; i++)
-    wallPz[i] = brick1.clone();
+    wallPz[i] = brickZ1.clone();
 
   for(var i = 362; i < 388; i++)
-    wallPz[i] = brick2.clone();
+    wallPz[i] = brickZ2.clone();
 
   for (var i = 0; i < 388; i++) {
 
@@ -564,10 +532,10 @@ function buildWall(){
   /////////////////////////////////////////////////////////////////////////////
 
   for(var i = 0; i < 362; i++)
-    wallNz[i] = brick1.clone();
+    wallNz[i] = brickZ1.clone();
 
   for(var i = 362; i < 388; i++)
-    wallNz[i] = brick2.clone();
+    wallNz[i] = brickZ2.clone();
 
   for (var i = 0; i < 388; i++) {
 
@@ -612,7 +580,7 @@ function buildWall(){
 
   for (i = 0; i < wallPx.length; i++) {
 
-    //pickables.push(wallPx[i], wallNx[i], wallPy[i], wallNy[i], wallPz[i], wallNz[i]);
+    pickables.push(wallPx[i], wallNx[i], wallPy[i], wallNy[i], wallPz[i], wallNz[i]);
     scene.add(wallPx[i], wallNx[i], wallPy[i], wallNy[i], wallPz[i], wallNz[i]);
 
   }
