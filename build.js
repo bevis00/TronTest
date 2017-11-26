@@ -269,7 +269,11 @@ function buildLight() {
   var pointLightMid = new THREE.PointLight (0xffffff, 1, 200);
   pointLightMid.position.set(0,0,0);
   pointLightMid.castShadow = true;
-  pointLightMid.shadow.mapSize.width = pointLightMid.shadow.mapSize.height = 1024;
+  pointLightMid.shadow.mapSize.width = pointLightMid.shadow.mapSize.height = 2048;
+  pointLightMid.shadowCameraNear = 1;
+  pointLightMid.shadowCameraFar = 600;
+  pointLightMid.shadowCameraFov = 60;
+  pointLightMid.shadowDarkness = .7;
   scene.add(pointLightMid);
   pointLightMid.shadow.bias = -.0001
 

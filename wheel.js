@@ -81,6 +81,4 @@ function wheelInit()
 	createWheel (tire2, 8);
 	tire2.position.z = -6.61;
 
-    scene.add (tire2);
-    scene.add (tire);
 }
