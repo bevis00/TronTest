@@ -246,11 +246,12 @@ function buildBigBall() {
 
   bigBall = new THREE.Mesh(new THREE.SphereGeometry(40,32,32), material);
   bigBall.name = "Breakout";
+  bigBall.visible = false;
   ball.visible = false;
   pickables.push(bigBall);
 
   var wireframeBall = new THREE.Mesh(new THREE.SphereGeometry(40.7,24,12), new THREE.MeshBasicMaterial( { color: 0xffffff, wireframe: true, transparent: true } ));
-
+  wireframeBall.visible = false;
   scene.add(bigBall, wireframeBall);
 
 }
@@ -433,6 +434,7 @@ function buildWall(){
     wallPy[i].rotation.x = Math.PI / 2;
     wallPy[i].name = "wallPy";
     wallPy[i].material.color = new THREE.Color(0x408449);
+    wallPy[i].visible = false;
 
   }
 
