@@ -29,9 +29,9 @@ function buildMiniLinePlanes() {
 
   var pxLine = new THREE.Line( geometry, material );
   scene2.add( pxLine );
-  
+
   ////////////////////////////////////////////////////////////////////////
-  
+
   var material = new THREE.LineDashedMaterial( {
     color: "red",
     dashSize: 10,
@@ -52,7 +52,7 @@ function buildMiniLinePlanes() {
   scene2.add( nxLine );
 
   ////////////////////////////////////////////////////////////////////////
-  
+
   var material = new THREE.LineBasicMaterial({
     color: 0x14ff00
   });
@@ -68,7 +68,7 @@ function buildMiniLinePlanes() {
 
   var pyLine = new THREE.Line( geometry, material );
   scene2.add( pyLine );
-  
+
   ////////////////////////////////////////////////////////////////////////
 
   var material = new THREE.LineDashedMaterial( {
@@ -89,9 +89,9 @@ function buildMiniLinePlanes() {
 
   var nyLine = new THREE.Line( geometry, material );
   scene2.add( nyLine );
-  
+
   ////////////////////////////////////////////////////////////////////////
-  
+
   var material = new THREE.LineBasicMaterial({
     color: "blue"
   });
@@ -107,9 +107,9 @@ function buildMiniLinePlanes() {
 
   var pzLine = new THREE.Line( geometry, material );
   scene2.add( pzLine );
-  
+
   ////////////////////////////////////////////////////////////////////////
-  
+
   var material = new THREE.LineDashedMaterial( {
     color: "blue",
     dashSize: 10,
@@ -148,8 +148,25 @@ function buildTank() {
 function buildTarget(){
 
   var target = new THREE.Mesh(new THREE.CylinderGeometry(3,3,1.5,35),new THREE.MeshBasicMaterial({
-    color: 0xf7ffaa
+    color: 0x888888
   }));
+
+  var texture = new THREE.TextureLoader();
+  texture.setCrossOrigin('');
+
+  var targetFace1 = new THREE.Mesh(new THREE.PlaneGeometry(6,6,64,64),new THREE.MeshLambertMaterial({map: texture.load('https://i.imgur.com/qmh1xru.png'),
+  transparent: true
+    }));
+  targetFace1.rotation.x = -Math.PI/2;
+  targetFace1.position.set(0, 0.8, 0);
+  target.add(targetFace1);
+
+  var targetFace2 = new THREE.Mesh(new THREE.PlaneGeometry(6,6,64,64),new THREE.MeshLambertMaterial({map: texture.load('https://i.imgur.com/qmh1xru.png'),
+  transparent: true
+    }));
+  targetFace2.rotation.x = Math.PI/2;
+  targetFace2.position.set(0, -0.8, 0);
+  target.add(targetFace2);
 
   return target;
 
@@ -217,7 +234,7 @@ function buildLightBall() {
   ballLight = new THREE.PointLight( 0xff0000, 7, 70 );
 
   ball = new THREE.Mesh(new THREE.SphereGeometry(0.9), new THREE.MeshLambertMaterial({
-      color: 0xff0000, 
+      color: 0xff0000,
       emissive: 0xff0000
   }));
   ball.add(ballLight);
@@ -231,7 +248,25 @@ function buildBigBall() {
   bigBall.name = "Breakout";
   ball.visible = false;
   pickables.push(bigBall);
-  scene.add(bigBall);
+
+  var wireframeBall = new THREE.Mesh(new THREE.SphereGeometry(40.7,24,12), new THREE.MeshBasicMaterial( { color: 0xffffff, wireframe: true, transparent: true } ));
+
+  scene.add(bigBall, wireframeBall);
+
+}
+
+function buildAimLine(star,end){
+  var lineS =  star;
+  var lineEnd = end;
+  var length = lineS.distanceTo(lineEnd);
+  var lineObj = new THREE.Object3D();
+  var cylinderLine = new THREE.Mesh(new THREE.BoxGeometry (length, 1,1),new THREE.MeshBasicMaterial({transparent: true, opacity: 0.5}));
+
+  cylinderLine.position.x = length/2;
+  lineObj.add(cylinderLine);
+
+
+  return lineObj;
 
 }
 
@@ -269,11 +304,7 @@ function buildLight() {
   var pointLightMid = new THREE.PointLight (0xffffff, 1, 200);
   pointLightMid.position.set(0,0,0);
   pointLightMid.castShadow = true;
-  pointLightMid.shadow.mapSize.width = pointLightMid.shadow.mapSize.height = 2048;
-  pointLightMid.shadowCameraNear = 1;
-  pointLightMid.shadowCameraFar = 600;
-  pointLightMid.shadowCameraFov = 60;
-  pointLightMid.shadowDarkness = .7;
+  pointLightMid.shadow.mapSize.width = pointLightMid.shadow.mapSize.height = 1024;
   scene.add(pointLightMid);
   pointLightMid.shadow.bias = -.0001
 

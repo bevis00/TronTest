@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+<style>
+
+.dbutton {
+  padding: 4px;
+  background: green;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.dbutton.selected {
+  background: orange;
+}
+
+</style>
+</head>
+
+<body>
+<h1 style="text-align:center"> fire ball test
+<br>(fire: J)(aim: L)(I and K control ot aim)
+</h1>
+
+<hr>
+<div id="container2" style="background:pink; float:left; margin:3px; width:45vw; height:45vw"></div>
+<div id="container" style="float:right; margin:3px; width:45vw; height:45vw"></div>
+<br>
+<hr style="clear:both">
+
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/84/three.min.js"></script>
+<script src="https://jyunming-chen.github.io/tutsplus/js/KeyboardState.js"></script>
+<script src="https://threejs.org/examples/js/controls/OrbitControls.js"></script>
+
+<script>
+var camera, scene, renderer;
+var camera2, scene2, renderer2;
+
+var controls;
+var keyboard = new KeyboardState();
+
+var raycaster = new THREE.Raycaster();
+var raycasterR = new THREE.Raycaster();
+
+var tank, barrel, turret, ball;
+var tankP, avatarBody, v, vP = new THREE.Vector3(1, 0, 0);
+
+
+
+var cameraOffset;
+var upTemp = new THREE.Vector3();
+
+
+var go = 0;
+var angle = 0;
+var change = 0;
+var changeX = 0, changeY = 1, changeZ = 0;
+
+var pickables = [];
+var plane = [];
+
+var intersects, intersectsR;
+var laser, laserR;
+var ballPos= new THREE.Vector3(),
+    vel= new THREE.Vector3() ,
+    force= new THREE.Vector3();
+var clock = new THREE.Clock();
+var aimDir = new THREE.Vector3();
+var line ,lineR;
+
+init();
+animate();
+
+function buildPlane() {
+
+  var material = new THREE.MeshBasicMaterial({
+    side: THREE.BackSide
+  });
+
+  var plane = new THREE.Mesh(new THREE.PlaneGeometry(150, 150, 32, 32), material);
+
+  return plane;
+
+}
+
+function buildTank() {
+
+  var tank = new THREE.Object3D();
+  var body = new THREE.Mesh(new THREE.BoxGeometry(20, 3, 10), new THREE.MeshBasicMaterial({
+    color: 0x005121
+  }));
+
+  body.position.y = 1.5;
+  tank.add(body);
+
+  return tank;
+
+}
+
+function init() {
+
+  var ww = $("#container").innerWidth();
+  var hh = $("#container").innerHeight();
+
+  renderer = new THREE.WebGLRenderer();
+  renderer.setSize(ww, hh);
+  renderer.setClearColor(0x888888);
+  $("#container").append(renderer.domElement);
+
+  renderer2 = new THREE.WebGLRenderer();
+  renderer2.setSize(ww, hh);
+  renderer2.setClearColor(0xbbbbbb);
+  $("#container2").append(renderer2.domElement);
+
+  ////////////////////////////////////////////////
+
+  scene = new THREE.Scene();
+  scene.add(new THREE.AxisHelper(25));
+
+  camera = new THREE.PerspectiveCamera(90, ww / hh, 1, 1000);
+  camera.position.z = 50;
+
+  camera2 = new THREE.PerspectiveCamera(50, ww / hh, 1, 1000);
+  camera2.position.z = 250;
+
+  var grid = new THREE.GridHelper(150, 15, 'red', 'white');
+  //scene.add(grid);
+  grid.position.y = -75;
+
+  controls = new THREE.OrbitControls(camera2, renderer2.domElement);
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  tank = buildTank();
+  turret = new THREE.Object3D();
+
+  barrel = new THREE.Mesh(new THREE.CylinderGeometry(1, 1, 10), new THREE.MeshBasicMaterial({
+    color: 0x222222
+  }));
+  barrel.position.x = 4;
+  barrel.rotation.z = -Math.PI / 2;
+
+  var head = new THREE.Mesh(new THREE.SphereGeometry(3, 32, 32), new THREE.MeshBasicMaterial({color: 0x664c14}));
+
+  turret.add(head, barrel);
+  turret.position.y = 5;
+
+  tank.add(turret);
+  scene.add(tank);
+
+  ////////////////////////////////////////////////////////////////////////
+
+  ball = new THREE.Mesh(new THREE.SphereGeometry(0.9), new THREE.MeshBasicMaterial({
+    color: 0xff0000
+  }));
+  //ball.visible = false;
+  scene.add(ball);
+
+  /////////////////////////////////////////////////////////////////////////////
+
+  for (var i = 0; i < 6; i++) {
+
+    plane[i] = buildPlane();
+    plane[i].name = "plane" + i;
+    pickables.push(plane[i]);
+    scene.add(plane[i]);
+
+  }
+
+  plane[0].position.set(75, 0, 0);
+  plane[0].rotation.y = Math.PI / 2;
+  plane[0].material.color = new THREE.Color(0x49a3b7);
+
+  plane[1].position.set(-75, 0, 0);
+  plane[1].rotation.y = -Math.PI / 2;
+  plane[1].material.color = new THREE.Color(0x8749b7);
+
+  plane[2].position.set(0, 75, 0);
+  plane[2].rotation.x = -Math.PI / 2;
+  plane[2].material.color = new THREE.Color(0x408449);
+
+  plane[3].position.set(0, -75, 0)
+  plane[3].rotation.x = Math.PI / 2;
+  plane[3].material.color = new THREE.Color(0xb78549);
+
+  plane[4].position.set(0, 0, 75);
+  plane[4].material.color = new THREE.Color(0xa1b749);
+
+  plane[5].position.set(0, 0, -75);
+  plane[5].rotation.y = Math.PI;
+  plane[5].material.color = new THREE.Color(0x4949b7);
+
+  window.addEventListener('resize', onWindowResize, false);
+
+}
+
+function onWindowResize() {
+
+  var ww = $("#container").innerWidth();
+  var hh = $("#container").innerHeight();
+
+  camera.aspect = ww / hh;
+  camera.updateProjectionMatrix();
+  renderer.setSize(ww, hh);
+
+  camera2.aspect = ww / hh;
+  camera2.updateProjectionMatrix();
+
+  renderer2.setSize(ww, hh);
+
+}
+
+function Matrix4Update(newPos, newDir) {
+
+  var localX = newDir.clone();
+  var localY = new THREE.Vector3(changeX, changeY, changeZ);
+  var localZ = new THREE.Vector3();
+  localZ.crossVectors(localX, localY);
+  tank.matrix.makeBasis(localX, localY, localZ);
+  tank.matrix.setPosition(newPos);
+  tank.matrixAutoUpdate = false;
+
+}
+
+function moveOnNy() {
+
+  var newPos = tank.localToWorld(new THREE.Vector3(go, 0, 0));
+  newPos.y = -75;
+
+  var newDir = vP.normalize();
+  newDir.applyAxisAngle(new THREE.Vector3(0, 1, 0), change);
+  Matrix4Update(newPos, newDir);
+  aimDir.copy(newDir);
+  cameraOffset = tank.localToWorld(new THREE.Vector3(-20, 7, 0));
+  camera.position.set(cameraOffset.x, cameraOffset.y, cameraOffset.z);
+  upTemp.set(0, 1, 0);
+  camera.up.copy(upTemp);
+  camera.lookAt(barrel.localToWorld(new THREE.Vector3(0, 10, 0)));
+
+}
+
+
+
+
+function makeLaser() {
+
+  var laserBase = barrel.clone().position;
+  var lineGeometry = new THREE.Geometry();
+  var laserEnd = barrel.clone().worldToLocal(intersects[0].point.clone());
+
+  lineGeometry.vertices.push(new THREE.Vector3(laserBase.x, laserBase.y, laserBase.z), new THREE.Vector3(laserEnd.y, laserEnd.x, laserEnd.z));
+  lineGeometry.computeLineDistances();
+
+  var lineMaterial = new THREE.LineDashedMaterial({
+    color: 0xff0000,
+    dashSize: 10,
+    gapSize: 2
+  });
+
+  var line = new THREE.Line(lineGeometry, lineMaterial);
+
+  return line;
+
+}
+
+function makeLaserR() {
+
+  var laserBase = intersects[0].point;
+  var lineGeometry = new THREE.Geometry();
+  var laserEnd = intersectsR[0].point;
+
+  lineGeometry.vertices.push(laserBase, laserEnd);
+  lineGeometry.computeLineDistances();
+
+  var lineMaterial = new THREE.LineDashedMaterial({
+    color: 0xffffff,
+    dashSize: 10,
+    gapSize: 2
+  });
+
+  var line = new THREE.Line(lineGeometry, lineMaterial);
+
+  return line;
+
+}
+
+function raytest() {
+
+  var laserdir = barrel.clone().localToWorld(new THREE.Vector3(0, 1, 0)).sub(barrel.clone().localToWorld(new THREE.Vector3(0, 0, 0)));
+
+  raycaster.set(barrel.localToWorld(new THREE.Vector3(0, 1, 0)), laserdir);
+  intersects = raycaster.intersectObjects(pickables);
+
+  if (intersects.length > 0) {
+
+    //facePX
+    if (intersects[0].object.name === "plane0") {
+
+      var n = new THREE.Vector3(-1, 0, 0);
+
+    }
+
+    if (intersects[0].object.name === "plane1") {
+
+      n = new THREE.Vector3(1, 0, 0);
+
+    }
+
+    if (intersects[0].object.name === "plane2") {
+
+      n = new THREE.Vector3(0, -1, 0);
+
+    }
+
+    if (intersects[0].object.name === "plane3") {
+
+      n = new THREE.Vector3(0, 1, 0);
+
+    }
+
+    if (intersects[0].object.name === "plane4") {
+
+      n = new THREE.Vector3(0, 0, -1);
+
+    }
+
+    if (intersects[0].object.name === "plane5") {
+
+      n = new THREE.Vector3(0, 0, 1);
+
+    }
+
+      var r = laserdir.sub(n.multiplyScalar(2 * (laserdir.dot(n))));
+
+      raycasterR.set(intersects[0].point, r.normalize());
+      intersectsR = raycasterR.intersectObjects(pickables);
+
+  }
+
+}
+
+function animate() {
+
+  keyboard.update();
+  raytest();
+
+  if (keyboard.pressed("W")) {
+
+    go += 3;
+
+    turret.remove(laser);
+		scene.remove(laserR);
+
+  }
+
+  if (keyboard.pressed("A")) {
+
+    change += 0.1;
+
+    turret.remove(laser);
+    scene.remove(laserR);
+
+  }
+
+  if (keyboard.pressed("D")) {
+
+    change += -0.1;
+
+    turret.remove(laser);
+    scene.remove(laserR);
+
+  }
+
+  if (keyboard.pressed("I")) {
+
+    angle += 0.05;
+    turret.rotation.z = angle;
+
+    turret.remove(laser);
+    scene.remove(laserR);
+
+  }
+
+  if (keyboard.pressed("K")) {
+
+    angle -= 0.05;
+    turret.rotation.z = angle;
+
+    turret.remove(laser);
+    scene.remove(laserR);
+
+  }
+
+  if (keyboard.down("L")) {
+    ballPos=barrel.clone().localToWorld(new THREE.Vector3(0,0,0));
+    laser = makeLaser();
+    laserR = makeLaserR();
+    fireBall();
+    line = buildAimLine(barrel.clone().localToWorld(new THREE.Vector3(0,0,0)),intersects[0].point.clone());
+    line.position.copy(intersects[0].point);
+    var angleA;
+    var xAxis = new THREE.Vector3(1,0,0);
+    var cross = new THREE.Vector3();
+    cross.crossVectors(xAxis,barrel.clone().localToWorld(new THREE.Vector3(0,0,0)).sub(intersects[0].point.clone())).normalize();
+    angleA = xAxis.angleTo(barrel.clone().localToWorld(new THREE.Vector3(0,0,0)).sub(intersects[0].point.clone()));
+    line.rotateOnAxis (cross, angleA);
+    var crossR = new THREE.Vector3();
+    lineR = buildAimLine(intersects[0].point.clone(),intersectsR[0].point.clone());
+    lineR.position.copy(intersectsR[0].point);
+    crossR.crossVectors(xAxis,intersects[0].point.clone().sub(intersectsR[0].point)).normalize();
+    angleA = xAxis.angleTo(intersects[0].point.clone().sub(intersectsR[0].point));
+    lineR.rotateOnAxis(crossR , angleA);
+
+    scene.add(line);
+    scene.add(lineR);
+    turret.add(laser);
+    scene.add(laserR);
+  }
+
+  if (keyboard.up("L")) {
+
+    turret.remove(laser);
+    scene.remove(laserR);
+    scene.remove(line);
+    scene.remove(lineR);
+
+
+  }
+
+  var detection = tank.localToWorld(new THREE.Vector3(10, 0, 0));
+
+
+  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  //faceNy, up = +Y = Vector3(0, 1, 0)
+  if (changeX === 0 && changeY === 1 && changeZ === 0 && detection.x <= 75 && detection.x >= -75 && detection.z <= 75 && detection.z >= -75)
+    moveOnNy();
+
+
+  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  go = 0;
+  change = 0;
+  controls.update();
+  ///////////////////////////////////////////////////////////////////////
+  if(ballPos.x >　75){
+    ballPos.x=74;
+    var n = new THREE.Vector3(-1, 0, 0);
+    reflactVel(n);
+  }
+  if (ballPos.x < -75) {
+    ballPos.x=-74;
+    var n = new THREE.Vector3(1, 0, 0);
+    reflactVel(n);
+  }
+  if (ballPos.y > 75) {
+    ballPos.y=74;
+    var n = new THREE.Vector3(0, -1, 0);
+    reflactVel(n);
+  }
+  if (ballPos.y < -75) {
+    ballPos.y=-74;
+    var n = new THREE.Vector3(0, 1, 0);
+    reflactVel(n);
+  }
+  if (ballPos.z > 75) {
+    ballPos.z=74;
+    var n = new THREE.Vector3(0, 0, -1);
+    reflactVel(n);
+  }
+  if (ballPos.z < -75 ) {
+    ballPos.z=-74;
+    var n = new THREE.Vector3(0, 0, 1);
+    reflactVel(n);
+  }
+
+  var dt = clock.getDelta(); // delta-time
+
+  // pos = pos + vel * dt
+  ballPos.add(vel.clone().multiplyScalar(dt));
+  ball.position.set(ballPos.x,ballPos.y,ballPos.z);
+
+  ///////////////////////////////////////////////////////////////////
+  requestAnimationFrame(animate);
+  render();
+
+}
+
+function render() {
+
+  renderer.render(scene, camera);
+  renderer2.render(scene, camera2);
+
+}
+
+function fireBall(){
+  vel = (barrel.clone().localToWorld(new THREE.Vector3(0, 1, 0)).sub(barrel .localToWorld(new THREE.Vector3(0, 0, 0)))).multiplyScalar(50);
+}
+
+function reflactVel(n){
+  vel.sub(n.multiplyScalar(2 * (vel.dot(n)))).multiplyScalar(0.7);
+}
+
+function buildAimLine(star,end){
+  var lineS =  star;
+  var lineEnd = end;
+  var length = lineS.distanceTo(lineEnd);
+  var lineObj = new THREE.Object3D();
+  var cylinderLine = new THREE.Mesh(new THREE.BoxGeometry (length, 2,2),new THREE.MeshNormalMaterial());
+
+  cylinderLine.position.x = length/2;
+  lineObj.add(cylinderLine);
+
+
+  return lineObj;
+
+}
+
+window.focus();
+
+
+</script>
+</body>
+
+</html>

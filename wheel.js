@@ -80,5 +80,4 @@ function wheelInit()
 	tire.position.z = 6.61;
 	createWheel (tire2, 8);
 	tire2.position.z = -6.61;
-
 }

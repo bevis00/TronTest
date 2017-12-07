@@ -27,10 +27,11 @@
 </head>
 
 <body>
-
+<!--
 <div id="info"> Inelastic collision
-<br>(fire: J)(aim: L)(I and K control to aim)(pick up ball: O)(motion hint: space)
+<br>(fire: J)(aim: L)(I and K control to aim)(pick up ball: O)
 </div>
+-->
 <title>Tron game</title>
 <div id = 'miniMap'></div>
 
@@ -45,6 +46,7 @@
 <script src="cubemap.js"></script>
 <script src="wheel.js"></script>
 <script src="stats.js"></script>
+<script src="ballRand.js"></script>
 <!--
 <audio id="DiscWars" autoplay loop style="display:none">
 <source src="sounds/DiscWars.mp3" type='audio/mpeg'>
@@ -111,9 +113,11 @@
   var raycaster = new THREE.Raycaster();
   var raycasterR = new THREE.Raycaster();
   var raycasterR2 = new THREE.Raycaster();
-  var raycasterR3 = new THREE.Raycaster();
-  var raycasterR4 = new THREE.Raycaster();
-  var raycasterR5 = new THREE.Raycaster();
+
+  var ballPos= new THREE.Vector3(),
+      vel= new THREE.Vector3() ,
+      force= new THREE.Vector3();
+  var clock = new THREE.Clock();
 
 
   var tank, barrel, turret, head;
@@ -131,24 +135,21 @@
   var pickables = [];
   var planes = [];
   var wallPx = [], wallNx = [], wallPy = [], wallNy = [], wallPz = [], wallNz = [];
-  var brickX1, brickX2;
+  var brick1, brick2;
 
-  var intersects, intersectsR, intersectsR2, intersectsR3, intersectsR4, intersectsR5;
-  var laser, laserR, laserR2;
+  var intersects, intersectsR, intersectsR2;
+  var line , lineR , lineR2;
   var target;
 
-  var curve;
-  var dataPoints = [];
   var uu = 0;
   var fireStart = false;
   var fire = true;
 
-  var speed = 0.006;
   var count = 0, cubeCamera1, cubeCamera2, material;
 
   var miniAvatar = new THREE.Object3D();
   var miniTarget, targetTemp = new THREE.Vector3(), flash = 0, miniBall;
-  var motionHint = new THREE.Object3D(), turn = false;
+  var motionHint = new THREE.Object3D(), motionHintBall = new THREE.Object3D(), turn = false;
   var slow = false;
   var fireSound, pickSound, flySound, DiscWars;
   var spotLight;
@@ -159,7 +160,7 @@
 
   function init() {
 
-    //DiscWars = document.getElementById ('DiscWars');
+    DiscWars = document.getElementById ('DiscWars');
     fireSound = document.getElementById ('fireSound');
     pickSound = document.getElementById ('pickSound');
     flySound = document.getElementById ('flySound');
@@ -327,6 +328,7 @@
     target = buildTarget();
     scene.add(target);
     target.castShadow = true;
+
     do{
       target.position.set(myRand(-65,65),myRand(-65,65),myRand(-65,65));
       target.rotation.x=myRand(0,3);
@@ -356,22 +358,31 @@
     var texture = new THREE.TextureLoader();
     texture.setCrossOrigin('');
 
-    var hint = new THREE.Mesh(new THREE.PlaneGeometry(41.15, 41.3), new THREE.MeshBasicMaterial({
+    var hint = new THREE.Mesh(new THREE.PlaneGeometry(20.575, 20.65), new THREE.MeshBasicMaterial({
       map: texture.load('https://i.imgur.com/TUgFXJD.png'),
       transparent: true
     }));
 
-    //hint.rotation.x = -Math.PI/2;
-
     hint.rotation.order = 'YXZ';
     hint.rotation.y = -Math.PI/2;
     hint.rotation.x = -Math.PI/2;
-     
-    hint.position.set(28, -7.5, 0);
-
+    hint.position.set(18, -7.9, 0);
     motionHint.add(hint);
-    tank.add(motionHint);
-    
+
+
+    var hintBall = new THREE.Mesh(new THREE.PlaneGeometry(11.5, 19.6), new THREE.MeshBasicMaterial({
+      map: texture.load('https://i.imgur.com/4z0xiJl.png'),
+      transparent: true
+    }));
+
+    hintBall.rotation.order = 'YXZ';
+    hintBall.rotation.y = -Math.PI/2;
+    hintBall.rotation.x = -Math.PI/2;
+    hintBall.position.set(19, -7.8, 0);
+    motionHintBall.add(hintBall);
+    motionHintBall.visible = false;
+
+    tank.add(motionHint, motionHintBall);
 
     /////////////////////////////////////////////////////////////////////////////
 
@@ -417,9 +428,7 @@
 
       tire.rotation.z -= 0.5;
       tire2.rotation.z -= 0.5;
-
-      turret.remove(laser);
-      scene.remove(laserR, laserR2);
+      scene.remove(line, lineR, lineR2);
 
     }
 
@@ -429,9 +438,8 @@
 
       tire.rotation.z -= 0.2;
       tire2.rotation.z += 0.2;
+      scene.remove(line, lineR, lineR2);
 
-      turret.remove(laser);
-      scene.remove(laserR, laserR2);
 
     }
 
@@ -441,9 +449,7 @@
 
       tire.rotation.z += 0.2;
       tire2.rotation.z -= 0.2;
-
-      turret.remove(laser);
-      scene.remove(laserR, laserR2);
+      scene.remove(line, lineR, lineR2);
 
     }
 
@@ -456,8 +462,7 @@
 
       }
 
-      turret.remove(laser);
-      scene.remove(laserR, laserR2);
+      scene.remove(line, lineR, lineR2);
 
     }
 
@@ -470,53 +475,45 @@
 
       }
 
-      turret.remove(laser);
-      scene.remove(laserR, laserR2);
+      scene.remove(line, lineR, lineR2);
 
     }
 
     if (keyboard.down("L")) {
+      
+      line = buildAimLine(barrel.clone().localToWorld(new THREE.Vector3(0,0,0)),intersects[0].point.clone());
+      line.position.copy(intersects[0].point);
+      var angleA;
+      var xAxis = new THREE.Vector3(1,0,0);
+      var cross = new THREE.Vector3();
+      cross.crossVectors(xAxis,barrel.clone().localToWorld(new THREE.Vector3(0,0,0)).sub(intersects[0].point.clone())).normalize();
+      angleA = xAxis.angleTo(barrel.clone().localToWorld(new THREE.Vector3(0,0,0)).sub(intersects[0].point.clone()));
+      line.rotateOnAxis (cross, angleA);
 
-      laser = makeLaser();
-      laserR = makeLaserR();
-      laserR2 = makeLaserR2();
+      var crossR = new THREE.Vector3();
+      lineR = buildAimLine(intersects[0].point.clone(),intersectsR[0].point.clone());
+      lineR.position.copy(intersectsR[0].point);
+      crossR.crossVectors(xAxis,intersects[0].point.clone().sub(intersectsR[0].point)).normalize();
+      angleA = xAxis.angleTo(intersects[0].point.clone().sub(intersectsR[0].point));
+      lineR.rotateOnAxis(crossR , angleA);
 
-      turret.add(laser);
-      scene.add(laserR, laserR2);
+      lineR2 = buildAimLine(intersectsR[0].point.clone(),intersectsR2[0].point.clone());
+      var crossR2 = new THREE.Vector3();
+      crossR2.crossVectors(xAxis,intersectsR[0].point.clone().sub(intersectsR2[0].point.clone())).normalize();
+      angleA = xAxis.angleTo(intersectsR[0].point.clone().sub(intersectsR2[0].point.clone()));
+      lineR2.rotateOnAxis(crossR2 , angleA);
+      lineR2.position.copy(intersectsR2[0].point);
+      scene.add(line);
+      scene.add(lineR);
+      scene.add(lineR2);
 
     }
 
     if (keyboard.up("L")) {
 
-      turret.remove(laser);
-      scene.remove(laserR, laserR2);
+      scene.remove(line, lineR, lineR2);
 
     }
-
-    if (keyboard.down("space")) {
-
-      targetTemp.copy(target.localToWorld(new THREE.Vector3(0, 0, 0)));
-
-      if (changeX === -1 && changeY === 0 && changeZ === 0)
-          targetTemp.x = 57;
-
-      if (changeX === 1 && changeY === 0 && changeZ === 0)
-          targetTemp.x = -57;
-
-      if (changeX === 0 && changeY === -1 && changeZ === 0)
-          targetTemp.y = 57;
-
-      if (changeX === 0 && changeY === 1 && changeZ === 0)
-          targetTemp.y = -57;
-
-      if (changeX === 0 && changeY === 0 && changeZ === -1)
-          targetTemp.z = 57;
-
-      if (changeX === 0 && changeY === 0 && changeZ === 1)
-          targetTemp.z = -57;
-
-    }
-
 
     if(tank.worldToLocal(ball.localToWorld(new THREE.Vector3(0, 0, 0))).x - 1 <= tank.position.x + 9 && tank.worldToLocal(ball.localToWorld(new THREE.Vector3(0, 0, 0))).x + 1 >= tank.position.x - 9 && tank.worldToLocal(ball.localToWorld(new THREE.Vector3(0, 0, 0))).y - 1 <= tank.position.y + 9 && tank.worldToLocal(ball.localToWorld(new THREE.Vector3(0, 0, 0))).y + 1 >= tank.position.y - 9 && tank.worldToLocal(ball.localToWorld(new THREE.Vector3(0, 0, 0))).z - 1 <= tank.position.z + 6.7 && tank.worldToLocal(ball.localToWorld(new THREE.Vector3(0, 0, 0))).z + 1 >= tank.position.z - 6.7 && fire === false){
 
@@ -526,31 +523,31 @@
       if (keyboard.down("O")) {
 
         ball.visible = false;
+        motionHintBall.visible = false;
         ball.position.set(0, 0, 0);
         miniBall.visible = false;
         fire = true;
         fireStart = false;
+        flySound.load();
         pickSound.play();
 
       }
 
-      }
-      else
-        head.material.color = new THREE.Color(0x664c14);
+    }
+    else
+      head.material.color = new THREE.Color(0x664c14);
 
     if(fire){
 
       if (keyboard.down("J")) {
 
+        ballPos=barrel.clone().localToWorld(new THREE.Vector3(0,0,0));
         ball.castShadow=true;
-        ball.position.copy(barrel.localToWorld(new THREE.Vector3(0, 0, 0)));
         ball.visible = true;
-        fireMove();
+        fireBall();
         fireStart = true;
         fire = false;
-        dataPoints = [];
-        uu = 0;
-        speed = 0.006;
+
         ball.material.color = new THREE.Color(0xff0000);
         ball.material.emissive = new THREE.Color(0xff0000);
         ballLight.color = new THREE.Color(0xff0000);
@@ -565,89 +562,181 @@
 
     if(fireStart){
 
-      uu += speed;
       flySound.play();
+      var refalctionDec = false;
 
-      if(uu <= 1)
-        ball.position.copy(curve.getPointAt (uu));
 
       for (var i = 0; i < 362; i++) {
 
-          if (ball.position.z > wallPx[i].position.z - 6 && ball.position.z < wallPx[i].position.z + 6 && ball.position.y > wallPx[i].position.y - 3.6 && ball.position.y < wallPx[i].position.y + 3.6 && ball.position.x > wallPx[i].position.x - 4  && ball.position.x < wallPx[i].position.x + 4 && speed > 0.0035 && wallPx[i].visible === true){
-            wallPx[i].visible = false;
-            slow = true;
+          if (ballPos.z > wallPx[i].position.z - 6 && ballPos.z < wallPx[i].position.z + 6 && ballPos.y > wallPx[i].position.y - 3.6 && ballPos.y < wallPx[i].position.y + 3.6 && ballPos.x > wallPx[i].position.x - 4  && ballPos.x < wallPx[i].position.x + 4 && wallPx[i].visible === true ){
+            if(vel.length() > 16){
+              wallPx[i].visible = false;
+            }
+            refalctionDec = true;
+            var n = new THREE.Vector3(-1, 0, 0);
           }
 
-          if (ball.position.z > wallNx[i].position.z - 6 && ball.position.z < wallNx[i].position.z + 6 && ball.position.y > wallNx[i].position.y - 3.6 && ball.position.y < wallNx[i].position.y + 3.6 && ball.position.x < wallNx[i].position.x + 4 && ball.position.x > wallNx[i].position.x - 4 && speed > 0.0035 && wallNx[i].visible === true){
-            wallNx[i].visible = false;
-            slow = true;
+          if (ballPos.z > wallNx[i].position.z - 6 && ballPos.z < wallNx[i].position.z + 6 && ballPos.y > wallNx[i].position.y - 3.6 && ballPos.y < wallNx[i].position.y + 3.6 && ballPos.x < wallNx[i].position.x + 4 && ballPos.x > wallNx[i].position.x - 4 && wallNx[i].visible === true ){
+            if(vel.length() > 16){
+              wallNx[i].visible = false;
+            }
+            refalctionDec = true;
+            var n = new THREE.Vector3(1, 0, 0);
+
           }
 
-          if (ball.position.x > wallPy[i].position.x - 6 && ball.position.x < wallPy[i].position.x + 6 && ball.position.z > wallPy[i].position.z - 3.6 && ball.position.z < wallPy[i].position.z + 3.6 && ball.position.y > wallPy[i].position.y - 4 && ball.position.y < wallPy[i].position.y + 4 && speed > 0.0035 && wallPy[i].visible === true){
-            wallPy[i].visible = false;
-            slow = true;
+          if (ballPos.x > wallPy[i].position.x - 6 && ballPos.x < wallPy[i].position.x + 6 && ballPos.z > wallPy[i].position.z - 3.6 && ballPos.z < wallPy[i].position.z + 3.6 && ballPos.y > wallPy[i].position.y - 4 && ballPos.y < wallPy[i].position.y + 4 && wallPy[i].visible === true ){
+
+            if(vel.length() > 16){
+              wallPy[i].visible = false;
+            }
+            refalctionDec = true;
+            var n = new THREE.Vector3(0, -1, 0);
+
           }
 
-          if (ball.position.x > wallNy[i].position.x - 6 && ball.position.x < wallNy[i].position.x + 6 && ball.position.z > wallNy[i].position.z - 3.6 && ball.position.z < wallNy[i].position.z + 3.6 && ball.position.y < wallNy[i].position.y + 4 && ball.position.y > wallNy[i].position.y - 4 && speed > 0.0035 && wallNy[i].visible === true){
-            wallNy[i].visible = false;
-            slow = true;
+          if (ballPos.x > wallNy[i].position.x - 6 && ballPos.x < wallNy[i].position.x + 6 && ballPos.z > wallNy[i].position.z - 3.6 && ballPos.z < wallNy[i].position.z + 3.6 && ballPos.y < wallNy[i].position.y + 4 && ballPos.y > wallNy[i].position.y - 4 && wallNy[i].visible === true ){
+            if(vel.length() > 16){
+              wallNy[i].visible = false;
+            }
+            refalctionDec = true;
+            var n = new THREE.Vector3(0, 1, 0);
+
           }
 
-          if (ball.position.x > wallPz[i].position.x - 6 && ball.position.x < wallPz[i].position.x + 6 && ball.position.y > wallPz[i].position.y - 3.6 && ball.position.y < wallPz[i].position.y + 3.6 && ball.position.z > wallPz[i].position.z - 4 && ball.position.z < wallPz[i].position.z + 4 && speed > 0.0035 && wallPz[i].visible === true){
-            wallPz[i].visible = false;
-            slow = true;
+          if (ballPos.x > wallPz[i].position.x - 6 && ballPos.x < wallPz[i].position.x + 6 && ballPos.y > wallPz[i].position.y - 3.6 && ballPos.y < wallPz[i].position.y + 3.6 && ballPos.z > wallPz[i].position.z - 4 && ballPos.z < wallPz[i].position.z + 4 && wallPz[i].visible === true ){
+
+            if(vel.length() > 16){
+              wallPz[i].visible = false;
+            }
+
+            refalctionDec = true;
+            var n = new THREE.Vector3(0, 0, -1);
+
           }
 
-          if (ball.position.x > wallNz[i].position.x - 6 && ball.position.x < wallNz[i].position.x + 6 && ball.position.y > wallNz[i].position.y - 3.6 && ball.position.y < wallNz[i].position.y + 3.6 && ball.position.z < wallNz[i].position.z + 4 && ball.position.z > wallNz[i].position.z - 4 && speed > 0.0035 && wallNz[i].visible === true){
-            wallNz[i].visible = false;
-            slow = true;
+          if (ballPos.x > wallNz[i].position.x - 6 && ballPos.x < wallNz[i].position.x + 6 && ballPos.y > wallNz[i].position.y - 3.6 && ballPos.y < wallNz[i].position.y + 3.6 && ballPos.z < wallNz[i].position.z + 4 && ballPos.z > wallNz[i].position.z - 4 && wallNz[i].visible === true ){
+            if(vel.length() > 16){
+              wallNz[i].visible = false;
+            }
+
+            refalctionDec = true;
+            var n = new THREE.Vector3(0, 0, 1);
+
           }
 
       }
 
       for (var i = 362; i < 388; i++) {
 
-        if (ball.position.z > wallPx[i].position.z - 3 && ball.position.z < wallPx[i].position.z + 3 && ball.position.y > wallPx[i].position.y - 3.6 && ball.position.y < wallPx[i].position.y + 3.6 && ball.position.x > wallPx[i].position.x - 4 && ball.position.x < wallPx[i].position.x + 4 && speed > 0.0035 && wallPx[i].visible === true){
-          wallPx[i].visible = false;
-          slow = true;
+        if (ballPos.z > wallPx[i].position.z - 3 && ballPos.z < wallPx[i].position.z + 3 && ballPos.y > wallPx[i].position.y - 3.6 && ballPos.y < wallPx[i].position.y + 3.6 && ballPos.x > wallPx[i].position.x - 4 && ballPos.x < wallPx[i].position.x + 4 && wallPx[i].visible === true ){
+
+          if(vel.length() > 16){
+            wallPx[i].visible = false;
+          }
+
+          refalctionDec = true;
+          var n = new THREE.Vector3(-1, 0, 0);
         }
 
-        if (ball.position.z > wallNx[i].position.z - 3 && ball.position.z < wallNx[i].position.z + 3 && ball.position.y > wallNx[i].position.y - 3.6 && ball.position.y < wallNx[i].position.y + 3.6 && ball.position.x < wallNx[i].position.x + 4 && ball.position.x > wallNx[i].position.x - 4 && speed > 0.0035 && wallNx[i].visible === true){
-          wallNx[i].visible = false;
-          slow = true;
+        if (ballPos.z > wallNx[i].position.z - 3 && ballPos.z < wallNx[i].position.z + 3 && ballPos.y > wallNx[i].position.y - 3.6 && ballPos.y < wallNx[i].position.y + 3.6 && ballPos.x < wallNx[i].position.x + 4 && ballPos.x > wallNx[i].position.x - 4 && wallNx[i].visible === true ){
+          if(vel.length() > 16){
+            wallNx[i].visible = false;
+          }
+
+          refalctionDec = true;
+          var n = new THREE.Vector3(1, 0, 0);
         }
 
-        if (ball.position.x > wallPy[i].position.x - 3 && ball.position.x < wallPy[i].position.x + 3 && ball.position.z > wallPy[i].position.z - 3.6 && ball.position.z < wallPy[i].position.z + 3.6 && ball.position.y > wallPy[i].position.y - 4 && ball.position.y < wallPy[i].position.y + 4 && speed > 0.0035 && wallPy[i].visible === true){
-          wallPy[i].visible = false;
-          slow = true;
+        if (ballPos.x > wallPy[i].position.x - 3 && ballPos.x < wallPy[i].position.x + 3 && ballPos.z > wallPy[i].position.z - 3.6 && ballPos.z < wallPy[i].position.z + 3.6 && ballPos.y > wallPy[i].position.y - 4 && ballPos.y < wallPy[i].position.y + 4 && wallPy[i].visible === true ){
+          if(vel.length() > 16){
+            wallPy[i].visible = false;
+          }
+
+          refalctionDec = true;
+          var n = new THREE.Vector3(0, -1, 0);
         }
 
-        if (ball.position.x > wallNy[i].position.x - 3 && ball.position.x < wallNy[i].position.x + 3 && ball.position.z > wallNy[i].position.z - 3.6 && ball.position.z < wallNy[i].position.z + 3.6 && ball.position.y < wallNy[i].position.y + 4 && ball.position.y > wallNy[i].position.y - 4 && speed > 0.0035 && wallNy[i].visible === true){
-          wallNy[i].visible = false;
-          slow = true;
+        if (ballPos.x > wallNy[i].position.x - 3 && ballPos.x < wallNy[i].position.x + 3 && ballPos.z > wallNy[i].position.z - 3.6 && ballPos.z < wallNy[i].position.z + 3.6 && ballPos.y < wallNy[i].position.y + 4 && ballPos.y > wallNy[i].position.y - 4 && wallNy[i].visible === true){
+
+          if(vel.length() > 16){
+            wallNy[i].visible = false;
+          }
+          refalctionDec = true;
+          var n = new THREE.Vector3(0, 1, 0);
         }
 
-        if (ball.position.x > wallPz[i].position.x - 3 && ball.position.x < wallPz[i].position.x + 3 && ball.position.y > wallPz[i].position.y - 3.6 && ball.position.y < wallPz[i].position.y + 3.6 && ball.position.z > wallPz[i].position.z - 4 && ball.position.z < wallPz[i].position.z + 4 && speed > 0.0035 && wallPz[i].visible === true){
-          wallPz[i].visible = false;
-          slow = true;
+        if (ballPos.x > wallPz[i].position.x - 3 && ballPos.x < wallPz[i].position.x + 3 && ballPos.y > wallPz[i].position.y - 3.6 && ballPos.y < wallPz[i].position.y + 3.6 && ballPos.z > wallPz[i].position.z - 4 && ballPos.z < wallPz[i].position.z + 4 && wallPz[i].visible === true ){
+          if(vel.length() > 16){
+            wallPz[i].visible = false;
+          }
+          refalctionDec = true;
+          var n = new THREE.Vector3(0, 0, -1);
         }
 
-        if (ball.position.x > wallNz[i].position.x - 3 && ball.position.x < wallNz[i].position.x + 3 && ball.position.y > wallNz[i].position.y - 3.6 && ball.position.y < wallNz[i].position.y + 3.6 && ball.position.z < wallNz[i].position.z + 4 && ball.position.z > wallNz[i].position.z - 4 && speed > 0.0035 && wallNz[i].visible === true){
-          wallNz[i].visible = false;
-          slow = true;
+
+        if (ballPos.x > wallNz[i].position.x - 3 && ballPos.x < wallNz[i].position.x + 3 && ballPos.y > wallNz[i].position.y - 3.6 && ballPos.y < wallNz[i].position.y + 3.6 && ballPos.z < wallNz[i].position.z + 4 && ballPos.z > wallNz[i].position.z - 4 && wallNz[i].visible === true){
+          if(vel.length() > 16){
+            wallNz[i].visible = false;
+          }
+
+          refalctionDec = true;
+          var n = new THREE.Vector3(0, 0, 1);
         }
 
       }
 
-      if( ball.position.distanceTo( new THREE.Vector3(0,0,0) ) < 40 )
-        slow = true;
+      if( refalctionDec && vel.length() > 10 ){
 
+        if(ballPos.x >　75){
+          ballPos.x=74;
+          var n = new THREE.Vector3(-1, 0, 0);
+          reflactVel(n);
+        }
+        if (ballPos.x < -75) {
+          ballPos.x=-74;
+          var n = new THREE.Vector3(1, 0, 0);
+          reflactVel(n);
+        }
+        if (ballPos.y > 75) {
+          ballPos.y=74;
+          var n = new THREE.Vector3(0, -1, 0);
+          reflactVel(n);
+        }
+        if (ballPos.y < -75) {
+          ballPos.y=-74;
+          var n = new THREE.Vector3(0, 1, 0);
+          reflactVel(n);
+        }
+        if (ballPos.z > 75) {
+          ballPos.z=74;
+          var n = new THREE.Vector3(0, 0, -1);
+          reflactVel(n);
+        }
+        if (ballPos.z < -75 ) {
+          ballPos.z=-74;
+          var n = new THREE.Vector3(0, 0, 1);
+          reflactVel(n);
+        }
 
-      if (slow)
-        if(speed > 0.0029)
-          speed -= .0005;
+      }
 
-      if(speed < 0.0035){
+      if( ballPos.distanceTo(new THREE.Vector3(0,0,0)) < 43 && vel.length() > 10){
+
+        var ballPosTemp = ballPos;
+
+        if( ballPos.distanceTo(new THREE.Vector3(0,0,0)) < 40){
+
+          ballPos.set(ballPosTemp.x, ballPosTemp.y, ballPosTemp.z);
+          var n = new THREE.Vector3();
+          n = (ballPos.clone().sub(new THREE.Vector3(0,0,0))).normalize();
+          reflactVel(n);
+
+        }
+
+      }
+
+      if(vel.length() < 16){
 
         ball.material.color = new THREE.Color(0x0000ff);
         ball.material.emissive = new THREE.Color(0x0000ff);
@@ -655,186 +744,44 @@
 
       }
 
-      if(ball.position.x > 250 || ball.position.y > 250 || ball.position.z > 250 || ball.position.x < -250 || ball.position.y < -250 || ball.position.z < -250){
+      if(ballPos.x > 250 || ballPos.y > 250 || ballPos.z > 250 || ballPos.x < -250 || ballPos.y < -250 || ballPos.z < -250){
 
-        var face = Math.floor(Math.random()*6);
-        speed = 0;
+        vel = new THREE.Vector3(0, 0, 0);
+        motionHintBall.visible = true;
         ball.material.color = new THREE.Color(0x0000ff);
         ball.material.emissive = new THREE.Color(0x0000ff);
         ballLight.color = new THREE.Color(0x0000ff);
         fireStart = false;
-
-        if(face === 0){
-
-          do{
-
-            face = Math.floor(Math.random()*388);
-
-          }while(wallPx[face].visible === false);
-
-          ball.position.set(wallPx[face].position.x - 4.4, wallPx[face].position.y, wallPx[face].position.z);
-
-        }
-
-        if(face === 1){
-
-          do{
-
-            face = Math.floor(Math.random()*388);
-
-          }while(wallNx[face].visible === false);
-
-          ball.position.set(wallNx[face].position.x + 4.4, wallNx[face].position.y, wallNx[face].position.z);
-
-        }
-
-        if(face === 2){
-
-          do{
-
-            face = Math.floor(Math.random()*388);
-
-          }while(wallPy[face].visible === false);
-
-          ball.position.set(wallPy[face].position.x, wallPy[face].position.y - 4.4, wallPy[face].position.z);
-
-        }
-
-        if(face === 3){
-
-          do{
-
-            face = Math.floor(Math.random()*388);
-
-          }while(wallNy[face].visible === false);
-
-          ball.position.set(wallNy[face].position.x, wallNy[face].position.y + 4.4, wallNy[face].position.z);
-
-        }
-
-        if(face === 4){
-
-          do{
-
-            face = Math.floor(Math.random()*388);
-
-          }while(wallPz[face].visible === false);
-
-          ball.position.set(wallPz[face].position.x, wallPz[face].position.y, wallPz[face].position.z - 4.4);
-
-        }
-
-        if(face === 5){
-
-          do{
-
-            face = Math.floor(Math.random()*388);
-
-          }while(wallNz[face].visible === false);
-
-          ball.position.set(wallNz[face].position.x, wallNz[face].position.y, wallNz[face].position.z + 4.4);
-
-        }
+        flySound.load();
+        randBallPos()
 
       }
 
-      if(uu > 1){
+      if(vel.length() < 10){
 
-        if(ball.position.distanceTo( new THREE.Vector3(0,0,0) ) < 41  && ball.position.distanceTo( new THREE.Vector3() ) > 39){
+        vel = new THREE.Vector3(0,0,0);
+        motionHintBall.visible = true;
+        if( ball.position.distanceTo( new THREE.Vector3(0,0,0) ) < 42  && ball.position.distanceTo( new THREE.Vector3(0,0,0) ) > 39 )
+          randBallPos();
 
-          var face = Math.floor(Math.random()*6);
-
-          if(face === 0){
-
-          do{
-
-            face = Math.floor(Math.random()*388);
-
-          }while(wallPx[face].visible === false);
-
-          ball.position.set(wallPx[face].position.x - 4.4, wallPx[face].position.y, wallPx[face].position.z);
-
-        }
-
-        if(face === 1){
-
-          do{
-
-            face = Math.floor(Math.random()*388);
-
-          }while(wallNx[face].visible === false);
-
-          ball.position.set(wallNx[face].position.x + 4.4, wallNx[face].position.y, wallNx[face].position.z);
-
-        }
-
-        if(face === 2){
-
-          do{
-
-            face = Math.floor(Math.random()*388);
-
-          }while(wallPy[face].visible === false);
-
-          ball.position.set(wallPy[face].position.x, wallPy[face].position.y - 4.4, wallPy[face].position.z);
-
-        }
-
-        if(face === 3){
-
-          do{
-
-            face = Math.floor(Math.random()*388);
-
-          }while(wallNy[face].visible === false);
-
-          ball.position.set(wallNy[face].position.x, wallNy[face].position.y + 4.4, wallNy[face].position.z);
-
-        }
-
-        if(face === 4){
-
-          do{
-
-            face = Math.floor(Math.random()*388);
-
-          }while(wallPz[face].visible === false);
-
-          ball.position.set(wallPz[face].position.x, wallPz[face].position.y, wallPz[face].position.z - 4.4);
-
-        }
-
-        if(face === 5){
-
-          do{
-
-            face = Math.floor(Math.random()*388);
-
-          }while(wallNz[face].visible === false);
-
-          ball.position.set(wallNz[face].position.x, wallNz[face].position.y, wallNz[face].position.z + 4.4);
-
-        }
-
-        }
-
-        dataPoints = [];
         fireStart = false;
-        uu = 0;
-        speed = 0.006;
+        flySound.load();
 
       }
 
     }
+
+    var dt = clock.getDelta(); // delta-time
+    // pos = pos + vel * dt
+    ballPos.add(vel.clone().multiplyScalar(dt));
+    ball.position.set(ballPos.x,ballPos.y,ballPos.z);
 
     miniBall.position.copy(ball.position);
     changePlane();
     spotLight.position.set( tank.localToWorld(new THREE.Vector3(-45, 7, 0)).x, tank.localToWorld(new THREE.Vector3(-45, 7, 0)).y, tank.localToWorld(new THREE.Vector3(-45, 7, 0)).z );
     go = 0;
     change = 0;
-    slow = false;
     Targeting();
-    
     requestAnimationFrame(animate);
     render();
 
