@@ -782,7 +782,8 @@ tank.visible = false;
     go = 0;
     change = 0;
     Targeting();
-
+    camera.position.set(0, 80, 0);
+    camera.lookAt(new THREE.Vector3());
     requestAnimationFrame(animate);
     render();
 
