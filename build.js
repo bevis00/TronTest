@@ -246,7 +246,6 @@ function buildBigBall() {
 
   bigBall = new THREE.Mesh(new THREE.SphereGeometry(40,32,32), material);
   bigBall.name = "Breakout";
-  bigBall.visible = false;
   ball.visible = false;
   pickables.push(bigBall);
 
@@ -434,7 +433,6 @@ function buildWall(){
     wallPy[i].rotation.x = Math.PI / 2;
     wallPy[i].name = "wallPy";
     wallPy[i].material.color = new THREE.Color(0x408449);
-    wallPy[i].visible = false;
 
   }
 
