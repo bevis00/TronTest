@@ -305,9 +305,9 @@
 
     tank.add(tire, tire2, turret);
     scene.add(tank);
-    //tank.visible = false;
+
     ////////////////////////////////////////////////////////////////////////
-  /*  
+    
     cubeCamera1 = new THREE.CubeCamera( 1, 1000, 256 );
     cubeCamera1.renderTarget.texture.minFilter = THREE.LinearMipMapLinearFilter;
     scene.add( cubeCamera1 );
@@ -315,10 +315,9 @@
     cubeCamera2 = new THREE.CubeCamera( 1, 1000, 256 );
     cubeCamera2.renderTarget.texture.minFilter = THREE.LinearMipMapLinearFilter;
     scene.add( cubeCamera2 );
-   */ 
+    
     material = new THREE.MeshPhongMaterial( {
-        /*envMap: cubeCamera2.renderTarget.texture*/
-        transparent: true, opacity: 0.5
+        envMap: cubeCamera2.renderTarget.texture
     } );
 
     ////////////////////////////////////////////////////////////////////////
@@ -389,8 +388,8 @@
 
     buildWall();
 
-    //stats = new Stats();
-    //document.body.appendChild( stats.dom );
+    stats = new Stats();
+    document.body.appendChild( stats.dom );
     setInterval(blink, 300);
 
     document.body.appendChild(renderer.domElement);
@@ -420,7 +419,7 @@
   function animate() {
 
     keyboard.update();
-    raytest();
+
 
 
     if (keyboard.pressed("W")) {
@@ -481,7 +480,7 @@
     }
 
     if (keyboard.down("L")) {
-      
+      raytest();
       line = buildAimLine(barrel.clone().localToWorld(new THREE.Vector3(0,0,0)),intersects[0].point.clone());
       line.position.copy(intersects[0].point);
       var angleA;
@@ -566,7 +565,7 @@
       flySound.play();
       var refalctionDec = false;
 
-
+      Targeting();
       for (var i = 0; i < 362; i++) {
 
           if (ballPos.z > wallPx[i].position.z - 6 && ballPos.z < wallPx[i].position.z + 6 && ballPos.y > wallPx[i].position.y - 3.6 && ballPos.y < wallPx[i].position.y + 3.6 && ballPos.x > wallPx[i].position.x - 4  && ballPos.x < wallPx[i].position.x + 4 && wallPx[i].visible === true ){
@@ -574,7 +573,7 @@
               wallPx[i].visible = false;
             }
             refalctionDec = true;
-            var n = new THREE.Vector3(-1, 0, 0);
+
           }
 
           if (ballPos.z > wallNx[i].position.z - 6 && ballPos.z < wallNx[i].position.z + 6 && ballPos.y > wallNx[i].position.y - 3.6 && ballPos.y < wallNx[i].position.y + 3.6 && ballPos.x < wallNx[i].position.x + 4 && ballPos.x > wallNx[i].position.x - 4 && wallNx[i].visible === true ){
@@ -582,7 +581,6 @@
               wallNx[i].visible = false;
             }
             refalctionDec = true;
-            var n = new THREE.Vector3(1, 0, 0);
 
           }
 
@@ -592,7 +590,6 @@
               wallPy[i].visible = false;
             }
             refalctionDec = true;
-            var n = new THREE.Vector3(0, -1, 0);
 
           }
 
@@ -601,7 +598,6 @@
               wallNy[i].visible = false;
             }
             refalctionDec = true;
-            var n = new THREE.Vector3(0, 1, 0);
 
           }
 
@@ -612,7 +608,6 @@
             }
 
             refalctionDec = true;
-            var n = new THREE.Vector3(0, 0, -1);
 
           }
 
@@ -622,7 +617,6 @@
             }
 
             refalctionDec = true;
-            var n = new THREE.Vector3(0, 0, 1);
 
           }
 
@@ -637,8 +631,7 @@
           }
 
           refalctionDec = true;
-          var n = new THREE.Vector3(-1, 0, 0);
-        }
+          }
 
         if (ballPos.z > wallNx[i].position.z - 3 && ballPos.z < wallNx[i].position.z + 3 && ballPos.y > wallNx[i].position.y - 3.6 && ballPos.y < wallNx[i].position.y + 3.6 && ballPos.x < wallNx[i].position.x + 4 && ballPos.x > wallNx[i].position.x - 4 && wallNx[i].visible === true ){
           if(vel.length() > 16){
@@ -646,8 +639,7 @@
           }
 
           refalctionDec = true;
-          var n = new THREE.Vector3(1, 0, 0);
-        }
+          }
 
         if (ballPos.x > wallPy[i].position.x - 3 && ballPos.x < wallPy[i].position.x + 3 && ballPos.z > wallPy[i].position.z - 3.6 && ballPos.z < wallPy[i].position.z + 3.6 && ballPos.y > wallPy[i].position.y - 4 && ballPos.y < wallPy[i].position.y + 4 && wallPy[i].visible === true ){
           if(vel.length() > 16){
@@ -655,8 +647,7 @@
           }
 
           refalctionDec = true;
-          var n = new THREE.Vector3(0, -1, 0);
-        }
+          }
 
         if (ballPos.x > wallNy[i].position.x - 3 && ballPos.x < wallNy[i].position.x + 3 && ballPos.z > wallNy[i].position.z - 3.6 && ballPos.z < wallNy[i].position.z + 3.6 && ballPos.y < wallNy[i].position.y + 4 && ballPos.y > wallNy[i].position.y - 4 && wallNy[i].visible === true){
 
@@ -664,26 +655,22 @@
             wallNy[i].visible = false;
           }
           refalctionDec = true;
-          var n = new THREE.Vector3(0, 1, 0);
-        }
+          }
 
         if (ballPos.x > wallPz[i].position.x - 3 && ballPos.x < wallPz[i].position.x + 3 && ballPos.y > wallPz[i].position.y - 3.6 && ballPos.y < wallPz[i].position.y + 3.6 && ballPos.z > wallPz[i].position.z - 4 && ballPos.z < wallPz[i].position.z + 4 && wallPz[i].visible === true ){
           if(vel.length() > 16){
             wallPz[i].visible = false;
           }
           refalctionDec = true;
-          var n = new THREE.Vector3(0, 0, -1);
-        }
+          }
 
 
         if (ballPos.x > wallNz[i].position.x - 3 && ballPos.x < wallNz[i].position.x + 3 && ballPos.y > wallNz[i].position.y - 3.6 && ballPos.y < wallNz[i].position.y + 3.6 && ballPos.z < wallNz[i].position.z + 4 && ballPos.z > wallNz[i].position.z - 4 && wallNz[i].visible === true){
           if(vel.length() > 16){
             wallNz[i].visible = false;
           }
-
           refalctionDec = true;
-          var n = new THREE.Vector3(0, 0, 1);
-        }
+          }
 
       }
 
@@ -722,7 +709,7 @@
 
       }
 
-      if( ballPos.distanceTo(new THREE.Vector3(0,0,0)) < 43 && vel.length() > 10){
+      if( ballPos.distanceTo(new THREE.Vector3(0,0,0)) < 42 && vel.length() > 10){
 
         var ballPosTemp = ballPos;
 
@@ -782,7 +769,7 @@
     spotLight.position.set( tank.localToWorld(new THREE.Vector3(-45, 7, 0)).x, tank.localToWorld(new THREE.Vector3(-45, 7, 0)).y, tank.localToWorld(new THREE.Vector3(-45, 7, 0)).z );
     go = 0;
     change = 0;
-    Targeting();
+
     requestAnimationFrame(animate);
     render();
 
@@ -790,7 +777,7 @@
 
 
   function render() {
-/*
+
     bigBall.visible = false;
 
     if ( count % 2 === 0 ) {
@@ -804,8 +791,8 @@
     count ++;
 
     bigBall.visible = true;
-*/
-    //stats.update();
+
+    stats.update();
     renderer.render(scene, camera);
     renderer2.render(scene2, camera2);
 

@@ -46,7 +46,7 @@ function raytest() {
     }
     if (intersects[0].object.name ==="Breakout"){
 
-      n = intersectsR[0].point.clone().sub(new THREE.Vector3(0,0,0));
+      n = intersects[0].point.clone().sub(new THREE.Vector3(0,0,0));
     }
 
       var r = laserdir.sub(n.multiplyScalar(2 * (laserdir.dot(n))));
@@ -103,50 +103,7 @@ function raytest() {
           raycasterR2.set(intersectsR[0].point, r.normalize());
           intersectsR2 = raycasterR2.intersectObjects(pickables);
 
-          if (intersectsR2.length > 0) {
 
-            //facePX
-            if (intersectsR2[0].object.name === "plane0" || intersectsR2[0].object.name === "wallPx") {
-
-              n = new THREE.Vector3(-1, 0, 0);
-
-            }
-
-            if (intersectsR2[0].object.name === "plane1" || intersectsR2[0].object.name === "wallNx") {
-
-              n = new THREE.Vector3(1, 0, 0);
-
-            }
-
-            if (intersectsR2[0].object.name === "plane2" || intersectsR2[0].object.name === "wallPy") {
-
-              n = new THREE.Vector3(0, -1, 0);
-
-            }
-
-            if (intersectsR2[0].object.name === "plane3" || intersectsR2[0].object.name === "wallNy") {
-
-              n = new THREE.Vector3(0, 1, 0);
-
-            }
-
-            if (intersectsR2[0].object.name === "plane4" || intersectsR2[0].object.name === "wallPz") {
-
-              n = new THREE.Vector3(0, 0, -1);
-
-            }
-
-            if (intersectsR2[0].object.name === "plane5" || intersectsR2[0].object.name === "wallNz") {
-
-              n = new THREE.Vector3(0, 0, 1);
-
-            }
-            if (intersectsR2[0].object.name ==="Breakout"){
-
-              n = intersectsR[0].point.clone().sub(new THREE.Vector3(0,0,0));
-            }
-
-          }
 
       }
 
