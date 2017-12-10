@@ -307,7 +307,7 @@
     scene.add(tank);
     //tank.visible = false;
     ////////////////////////////////////////////////////////////////////////
-    
+  /*  
     cubeCamera1 = new THREE.CubeCamera( 1, 1000, 256 );
     cubeCamera1.renderTarget.texture.minFilter = THREE.LinearMipMapLinearFilter;
     scene.add( cubeCamera1 );
@@ -315,9 +315,10 @@
     cubeCamera2 = new THREE.CubeCamera( 1, 1000, 256 );
     cubeCamera2.renderTarget.texture.minFilter = THREE.LinearMipMapLinearFilter;
     scene.add( cubeCamera2 );
-    
+   */ 
     material = new THREE.MeshPhongMaterial( {
-        envMap: cubeCamera2.renderTarget.texture
+        /*envMap: cubeCamera2.renderTarget.texture*/
+        transparent: true, opacity: 0.5
     } );
 
     ////////////////////////////////////////////////////////////////////////
@@ -782,9 +783,6 @@
     go = 0;
     change = 0;
     Targeting();
-    camera.position.set(0, 80, 0);
-    camera.up.set(0, 1, 0);
-    camera.lookAt(new THREE.Vector3());
     requestAnimationFrame(animate);
     render();
 
@@ -792,7 +790,7 @@
 
 
   function render() {
-
+/*
     bigBall.visible = false;
 
     if ( count % 2 === 0 ) {
@@ -806,7 +804,7 @@
     count ++;
 
     bigBall.visible = true;
-
+*/
     stats.update();
     renderer.render(scene, camera);
     renderer2.render(scene2, camera2);

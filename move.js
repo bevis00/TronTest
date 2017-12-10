@@ -29,11 +29,11 @@ function moveOnNy() {
   newDir.applyAxisAngle(new THREE.Vector3(0, 1, 0), change);
   Matrix4Update(newPos, newDir, newMiniPos);
 
-  cameraOffset = tank.localToWorld(new THREE.Vector3(-45, 7, 0));
+  cameraOffset = tank.localToWorld(new THREE.Vector3(20, 10, 50));
   camera.position.set(cameraOffset.x, cameraOffset.y, cameraOffset.z);
   upTemp.set(0, 1, 0);
   camera.up.copy(upTemp);
-  camera.lookAt(barrel.localToWorld(new THREE.Vector3(0, 10, 0)));
+  camera.lookAt(tank.localToWorld(new THREE.Vector3(20, 10, 0)));
 
 }
 
