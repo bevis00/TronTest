@@ -389,8 +389,8 @@
 
     buildWall();
 
-    stats = new Stats();
-    document.body.appendChild( stats.dom );
+    //stats = new Stats();
+    //document.body.appendChild( stats.dom );
     setInterval(blink, 300);
 
     document.body.appendChild(renderer.domElement);
@@ -805,7 +805,7 @@
 
     bigBall.visible = true;
 */
-    stats.update();
+    //stats.update();
     renderer.render(scene, camera);
     renderer2.render(scene2, camera2);
 
