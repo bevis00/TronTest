@@ -250,7 +250,7 @@ function buildBigBall() {
   pickables.push(bigBall);
 
   var wireframeBall = new THREE.Mesh(new THREE.SphereGeometry(40.7,24,12), new THREE.MeshBasicMaterial( { color: 0xffffff, wireframe: true, transparent: true } ));
-  //wireframeBall.visible = false;
+  wireframeBall.visible = false;
   scene.add(bigBall, wireframeBall);
 
 }
