@@ -12,7 +12,7 @@ function changePlane(){
     moveOnNy();
     motionHint.rotation.y = Math.atan2( -tank.worldToLocal(target.localToWorld(new THREE.Vector3(0, 0, 0))).z, tank.worldToLocal(target.localToWorld(new THREE.Vector3(0, 0, 0))).x );
     motionHintBall.rotation.y = Math.atan2( -tank.worldToLocal(ball.localToWorld(new THREE.Vector3(0, 0, 0))).z, tank.worldToLocal(ball.localToWorld(new THREE.Vector3(0, 0, 0))).x );
-
+/*
     if(camera.position.x > 74)
       camera.position.x = 74;
 
@@ -24,7 +24,7 @@ function changePlane(){
 
     if(camera.position.z < -74)
       camera.position.z = -74;
-
+*/
 
   }
 
