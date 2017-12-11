@@ -307,7 +307,7 @@
     scene.add(tank);
 
     ////////////////////////////////////////////////////////////////////////
-    
+    /*
     cubeCamera1 = new THREE.CubeCamera( 1, 1000, 256 );
     cubeCamera1.renderTarget.texture.minFilter = THREE.LinearMipMapLinearFilter;
     scene.add( cubeCamera1 );
@@ -315,9 +315,10 @@
     cubeCamera2 = new THREE.CubeCamera( 1, 1000, 256 );
     cubeCamera2.renderTarget.texture.minFilter = THREE.LinearMipMapLinearFilter;
     scene.add( cubeCamera2 );
-    
+    */
     material = new THREE.MeshPhongMaterial( {
-        envMap: cubeCamera2.renderTarget.texture
+        /*envMap: cubeCamera2.renderTarget.texture*/
+        transparent: true, opacity: 0.5
     } );
 
     ////////////////////////////////////////////////////////////////////////
@@ -388,8 +389,8 @@
 
     buildWall();
 
-    stats = new Stats();
-    document.body.appendChild( stats.dom );
+    //stats = new Stats();
+    //document.body.appendChild( stats.dom );
     setInterval(blink, 300);
 
     document.body.appendChild(renderer.domElement);
@@ -777,7 +778,7 @@
 
 
   function render() {
-
+    /*
     bigBall.visible = false;
 
     if ( count % 2 === 0 ) {
@@ -791,8 +792,8 @@
     count ++;
 
     bigBall.visible = true;
-
-    stats.update();
+  */
+    //stats.update();
     renderer.render(scene, camera);
     renderer2.render(scene2, camera2);
 
