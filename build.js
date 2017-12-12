@@ -250,7 +250,7 @@ function buildBigBall() {
   pickables.push(bigBall);
 
   var wireframeBall = new THREE.Mesh(new THREE.SphereGeometry(40.7,24,12), new THREE.MeshBasicMaterial( { color: 0xffffff, wireframe: true, transparent: true } ));
-  wireframeBall.visible = false;
+
   scene.add(bigBall, wireframeBall);
 
 }
@@ -300,22 +300,6 @@ function buildLight() {
   var pointLight4 = new THREE.PointLight( 0xffffff, 1, 115 );
 	pointLight4.position.set( 37.5, -37.5, 37.5 );
 	scene.add( pointLight4 );
-
-  var pointLight5 = new THREE.PointLight( 0xffffff, 1, 115 );
-  pointLight5.position.set( -37.5, -37.5, -37.5 );
-  scene.add( pointLight5 );
-
-  var pointLight6 = new THREE.PointLight( 0xffffff, 1, 115 );
-  pointLight6.position.set( -37.5, -37.5, 37.5 );
-  scene.add( pointLight6 );
-
-  var pointLight7 = new THREE.PointLight( 0xffffff, 1, 115 );
-  pointLight7.position.set( 37.5, 37.5, -37.5 );
-  scene.add( pointLight7 );
-
-  var pointLight8 = new THREE.PointLight( 0xffffff, 1, 115 );
-  pointLight8.position.set( 37.5, 37.5, 37.5 );
-  scene.add( pointLight8 );
 
   var pointLightMid = new THREE.PointLight (0xffffff, 1, 200);
   pointLightMid.position.set(0,0,0);
