@@ -364,6 +364,9 @@ function buildWall(){
 
       wallPx[count].position.set(78.5, 72 - i * 12, -65 + j * 10);
 
+      if(count%2 !== 0)
+        wallPx[count].visible = false;
+
     }
 
   }
@@ -411,6 +414,9 @@ function buildWall(){
     for (var j = 0; j < 14; j++, count++) {
 
       wallNx[count].position.set(-78.5, 72 - i * 12, 65 - j * 10);
+
+      if(count%2 !== 0)
+        wallNx[count].visible = false;
 
     }
 
@@ -460,6 +466,9 @@ function buildWall(){
 
       wallPy[count].position.set(-65 + j * 10, 78.5, 72 - i * 12);
 
+      if(count%2 !== 0)
+        wallPy[count].visible = false;
+
     }
 
   }
@@ -507,6 +516,9 @@ function buildWall(){
     for (var j = 0; j < 14; j++, count++) {
 
       wallNy[count].position.set(-65 + j * 10, -78.5, -72 + i * 12);
+
+      if(count%2 !== 0)
+        wallNy[count].visible = false;
 
     }
 
@@ -556,6 +568,9 @@ function buildWall(){
 
       wallPz[count].position.set(65 - j * 10, 72 - i * 12, 78.5);
 
+      if(count%2 !== 0)
+        wallPz[count].visible = false;
+
     }
 
   }
@@ -602,6 +617,9 @@ function buildWall(){
     for (var j = 0; j < 14; j++, count++) {
 
       wallNz[count].position.set(-65 + j * 10, 72 - i * 12, -78.5);
+
+      if(count%2 !== 0)
+        wallNz[count].visible = false;
 
     }
 
