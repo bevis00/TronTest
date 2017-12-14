@@ -759,6 +759,9 @@
 
     }
 
+
+  
+
     var dt = clock.getDelta(); // delta-time
     // pos = pos + vel * dt
     ballPos.add(vel.clone().multiplyScalar(dt));
@@ -769,6 +772,11 @@
     spotLight.position.set( tank.localToWorld(new THREE.Vector3(-45, 7, 0)).x, tank.localToWorld(new THREE.Vector3(-45, 7, 0)).y, tank.localToWorld(new THREE.Vector3(-45, 7, 0)).z );
     go = 0;
     change = 0;
+
+    camera.position.set(0, 80, 0);
+  upTemp.set(0, 1, 0);
+  camera.up.copy(upTemp);
+  camera.lookAt(new THREE.Vector3());
 
     requestAnimationFrame(animate);
     render();
