@@ -23,7 +23,7 @@ body {
 
 <body> 
 
-
+<div id="info">Balance car model</div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/87/three.min.js"></script>
 <script src="https://threejs.org/examples/js/controls/OrbitControls.js"></script>
 <script src="https://jyunming-chen.github.io/tutsplus/js/KeyboardState.js"></script>
@@ -68,31 +68,10 @@ body {
 
 <script>
 
-var camera, scene, renderer, mesh, light, controls;
-var keyboard = new KeyboardState();
-var turn = true;
-var angle = 0;
+var camera, scene, renderer, controls;
 var tire = new THREE.Object3D();
 var tire2 = new THREE.Object3D();
 var tank;
-
-
-var car;
-var go = 0;
-var change = 0;
-
-var upTemp = new THREE.Vector3();
-var cameraOffset;
-
-var changeX = 0, changeY = 1, changeZ = 0;
-
-var carP;
-var newCarP;
-var avatarBody;
-var v;
-var vP = new THREE.Vector3(1, 0, 0);
-
-var car = new THREE.Object3D();
 
 init();
 animate();
@@ -112,8 +91,7 @@ function init() {
   scene.add(light);
 
   var gridXZ = new THREE.GridHelper(100, 10, 'red', 'white');
-  gridXZ.position.y = -8;
-  scene.add(gridXZ);
+  //scene.add(gridXZ);
 
   renderer = new THREE.WebGLRenderer();
   renderer.setSize(window.innerWidth, window.innerHeight);
@@ -177,7 +155,7 @@ function init() {
   handle.rotation.y = -Math.PI / 2;
   tank.add(handle);
 
-  tank.position.y = 8;
+	tank.position.y = 8;
   tank.add(tire, tire2, turret);
   scene.add(tank);
 
@@ -263,70 +241,7 @@ function wheelInit() {
   tire2.position.z = -6.61;
 }
 
-function Matrix4Update(newPos, newDir) {
-
-  var localX = newDir.clone();
-  var localY = new THREE.Vector3(changeX, changeY, changeZ);
-  var localZ = new THREE.Vector3();
-  localZ.crossVectors(localX, localY);
-  tank.matrix.makeBasis(localX, localY, localZ);
-  tank.matrix.setPosition(newPos);
-  tank.matrixAutoUpdate = false;
-  
-}
-
-function moveOnNy() {
-
-  var newPos = tank.localToWorld(new THREE.Vector3(go, 0, 0));
-  
-  var newDir = vP.normalize();
-  newDir.applyAxisAngle(new THREE.Vector3(0, 1, 0), change);
-  Matrix4Update(newPos, newDir);
-
-  //cameraOffset = car.localToWorld(new THREE.Vector3(-20, 10, 0));
-  //camera.position.set(cameraOffset.x, cameraOffset.y, cameraOffset.z);
-  //upTemp.set(0, 1, 0);
-  //camera.up.copy(upTemp);
-  //camera.lookAt(newPos);
-
-}
-
 function animate() {
-  
-  keyboard.update();
-
-  if (keyboard.pressed("W")) {
-    go += 5;
-  }
-
-  if (keyboard.pressed("A")) {
-    change += 0.1;
-  }
-
-  if (keyboard.pressed("D")) {
-    change += -0.1;
-  }
-  
-  if (keyboard.pressed("I")) {
-      if(angle < Math.PI / 4){
-          angle += 0.015;
-          turret.rotation.z = angle;
-      }
-
-    }
-    if (keyboard.pressed("K")) {
-      if(angle > 0){
-          angle -= 0.015;
-          turret.rotation.z = angle;
-      }
-
-    }
-
-    moveOnNy();
-
-
-  go = 0;
-  change = 0;
   controls.update();
 
 
@@ -337,11 +252,6 @@ function animate() {
 function render() {
   renderer.render(scene, camera);
 }
-
-// important to add this 
-// in jsfiddle!
-window.focus();
-
 
 </script>
 </body>
