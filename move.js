@@ -49,7 +49,7 @@ function moveOnPx() {
   newDir.applyAxisAngle(new THREE.Vector3(-1, 0, 0), change);
   Matrix4Update(newPos, newDir, newMiniPos);
 
-  cameraOffset = tank.localToWorld(new THREE.Vector3(-45, 7, 0));
+  cameraOffset = tank.localToWorld(new THREE.Vector3(-40, 10, 20));
   camera.position.set(cameraOffset.x, cameraOffset.y, cameraOffset.z);
   upTemp.set(-1, 0, 0);
   camera.up.copy(upTemp);
@@ -69,7 +69,7 @@ function moveOnPy() {
   newDir.applyAxisAngle(new THREE.Vector3(0, -1, 0), change);
   Matrix4Update(newPos, newDir, newMiniPos);
 
-  cameraOffset = tank.localToWorld(new THREE.Vector3(-45, 7, 0));
+  cameraOffset = tank.localToWorld(new THREE.Vector3(-40, 10, 20));
   camera.position.set(cameraOffset.x, cameraOffset.y, cameraOffset.z);
   upTemp.set(0, -1, 0);
   camera.up.copy(upTemp);
@@ -89,7 +89,7 @@ function moveOnNx() {
   newDir.applyAxisAngle(new THREE.Vector3(1, 0, 0), change);
   Matrix4Update(newPos, newDir, newMiniPos);
 
-  cameraOffset = tank.localToWorld(new THREE.Vector3(-45, 7, 0));
+  cameraOffset = tank.localToWorld(new THREE.Vector3(-40, 10, 20));
   camera.position.set(cameraOffset.x, cameraOffset.y, cameraOffset.z);
   upTemp.set(1, 0, 0);
   camera.up.copy(upTemp);
@@ -109,7 +109,7 @@ function moveOnPz() {
   newDir.applyAxisAngle(new THREE.Vector3(0, 0, -1), change);
   Matrix4Update(newPos, newDir, newMiniPos);
 
-  cameraOffset = tank.localToWorld(new THREE.Vector3(-45, 7, 0));
+  cameraOffset = tank.localToWorld(new THREE.Vector3(-40, 10, 20));
   camera.position.set(cameraOffset.x, cameraOffset.y, cameraOffset.z);
   upTemp.set(0, 0, -1);
   camera.up.copy(upTemp);
@@ -129,7 +129,7 @@ function moveOnNz() {
   newDir.applyAxisAngle(new THREE.Vector3(0, 0, 1), change);
   Matrix4Update(newPos, newDir, newMiniPos);
 
-  cameraOffset = tank.localToWorld(new THREE.Vector3(-45, 7, 0));
+  cameraOffset = tank.localToWorld(new THREE.Vector3(-40, 10, 20));
   camera.position.set(cameraOffset.x, cameraOffset.y, cameraOffset.z);
   upTemp.set(0, 0, 1);
   camera.up.copy(upTemp);
