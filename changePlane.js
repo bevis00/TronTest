@@ -14,16 +14,72 @@ function changePlane(){
     motionHintBall.rotation.y = Math.atan2( -tank.worldToLocal(ball.localToWorld(new THREE.Vector3(0, 0, 0))).z, tank.worldToLocal(ball.localToWorld(new THREE.Vector3(0, 0, 0))).x );
 
     if(camera.position.x > 74)
-      camera.position.x = 74;
+      for (var i = 0; i < 388; i++)
+        wallPx[i].visible = false;
+    else
+      for (var i = 0; i < 388; i++)
+        if(wallPx[i].alive === true)
+          wallPx[i].visible = true;
 
     if(camera.position.x < -74)
-      camera.position.x = -74;
+      for (var i = 0; i < 388; i++)
+        wallNx[i].visible = false;
+    else
+      for (var i = 0; i < 388; i++)
+        if(wallNx[i].alive === true)
+          wallNx[i].visible = true;
 
     if(camera.position.z > 74)
-      camera.position.z = 74;
+      for (var i = 0; i < 388; i++)
+        wallPz[i].visible = false;
+    else
+      for (var i = 0; i < 388; i++)
+        if(wallPz[i].alive === true)
+          wallPz[i].visible = true;
 
     if(camera.position.z < -74)
-      camera.position.z = -74;
+      for (var i = 0; i < 388; i++)
+        wallNz[i].visible = false;
+    else
+      for (var i = 0; i < 388; i++)
+        if(wallNz[i].alive === true)
+          wallNz[i].visible = true;
+
+    if(detection.x > 68){
+
+      changeX2 = 0;
+      changeY2 = 0;
+      changeZ2 = 1;
+
+      avatarBody = detection.clone().sub(tank.localToWorld(new THREE.Vector3(0, 0, 0)));
+      tankP = tank.clone().localToWorld(new THREE.Vector3(0, 0, 0)).add(avatarBody.clone().add(avatarBody));
+
+      tank.matrixAutoUpdate = true;
+
+    }
+
+    if(tank.matrixAutoUpdate === true){
+      
+      if(alpha < 1)
+        alpha += 0.0001
+      
+      if(alpha > 1){
+
+        alpha = 0;
+        tank.matrixAutoUpdate = false;
+
+      }
+
+      if(changeX2 === 0 && changeY2 === 0 && changeZ2 === 1){
+
+        var pp = tank.clone().localToWorld(new THREE.Vector3(0, 0, 0));
+        pp.lerp(tankP.applyAxisAngle(new THREE.Vector3(0, 0, 1), Math.PI / 3), alpha);
+
+      }
+
+      tank.position.copy(pp);
+
+    }
 
 
   }
@@ -94,16 +150,72 @@ function changePlane(){
     motionHintBall.rotation.y = Math.atan2( -tank.worldToLocal(ball.localToWorld(new THREE.Vector3(0, 0, 0))).z, tank.worldToLocal(ball.localToWorld(new THREE.Vector3(0, 0, 0))).x );
 
     if(camera.position.y > 74)
-      camera.position.y = 74;
+      for (var i = 0; i < 388; i++)
+        wallPy[i].visible = false;
+    else
+      for (var i = 0; i < 388; i++)
+        if(wallPy[i].alive === true)
+          wallPy[i].visible = true;
 
     if(camera.position.y < -74)
-      camera.position.y = -74;
+      for (var i = 0; i < 388; i++)
+        wallNy[i].visible = false;
+    else
+      for (var i = 0; i < 388; i++)
+        if(wallNy[i].alive === true)
+          wallNy[i].visible = true;
 
     if(camera.position.z > 74)
-      camera.position.z = 74;
+      for (var i = 0; i < 388; i++)
+        wallPz[i].visible = false;
+    else
+      for (var i = 0; i < 388; i++)
+        if(wallPz[i].alive === true)
+          wallPz[i].visible = true;
 
     if(camera.position.z < -74)
-      camera.position.z = -74;
+      for (var i = 0; i < 388; i++)
+        wallNz[i].visible = false;
+    else
+      for (var i = 0; i < 388; i++)
+        if(wallNz[i].alive === true)
+          wallNz[i].visible = true;
+
+    if(detection.y > 68){
+
+      changeX2 = 0;
+      changeY2 = 0;
+      changeZ2 = 1;
+
+      avatarBody = detection.clone().sub(tank.localToWorld(new THREE.Vector3(0, 0, 0)));
+      tankP = tank.clone().localToWorld(new THREE.Vector3(0, 0, 0)).add(avatarBody.clone().add(avatarBody));
+
+      tank.matrixAutoUpdate = true;
+
+    }
+
+    if(tank.matrixAutoUpdate === true){
+      
+      if(alpha < 1)
+        alpha += 0.0001
+      
+      if(alpha > 1){
+
+        alpha = 0;
+        tank.matrixAutoUpdate = false;
+
+      }
+
+      if(changeX2 === 0 && changeY2 === 0 && changeZ2 === 1){
+
+        var pp = tank.clone().localToWorld(new THREE.Vector3(0, 0, 0));
+        pp.lerp(tankP.applyAxisAngle(new THREE.Vector3(0, 0, 1), Math.PI / 3), alpha);
+
+      }
+
+      tank.position.copy(pp);
+
+    }
 
   }
 
@@ -173,16 +285,72 @@ function changePlane(){
     motionHintBall.rotation.y = Math.atan2( -tank.worldToLocal(ball.localToWorld(new THREE.Vector3(0, 0, 0))).z, tank.worldToLocal(ball.localToWorld(new THREE.Vector3(0, 0, 0))).x );
 
     if(camera.position.x > 74)
-      camera.position.x = 74;
+      for (var i = 0; i < 388; i++)
+        wallPx[i].visible = false;
+    else
+      for (var i = 0; i < 388; i++)
+        if(wallPx[i].alive === true)
+          wallPx[i].visible = true;
 
     if(camera.position.x < -74)
-      camera.position.x = -74;
+      for (var i = 0; i < 388; i++)
+        wallNx[i].visible = false;
+    else
+      for (var i = 0; i < 388; i++)
+        if(wallNx[i].alive === true)
+          wallNx[i].visible = true;
 
     if(camera.position.z > 74)
-      camera.position.z = 74;
+      for (var i = 0; i < 388; i++)
+        wallPz[i].visible = false;
+    else
+      for (var i = 0; i < 388; i++)
+        if(wallPz[i].alive === true)
+          wallPz[i].visible = true;
 
     if(camera.position.z < -74)
-      camera.position.z = -74;
+      for (var i = 0; i < 388; i++)
+        wallNz[i].visible = false;
+    else
+      for (var i = 0; i < 388; i++)
+        if(wallNz[i].alive === true)
+          wallNz[i].visible = true;
+
+    if(detection.x < -68){
+
+      changeX2 = 0;
+      changeY2 = 0;
+      changeZ2 = 1;
+
+      avatarBody = detection.clone().sub(tank.localToWorld(new THREE.Vector3(0, 0, 0)));
+      tankP = tank.clone().localToWorld(new THREE.Vector3(0, 0, 0)).add(avatarBody.clone().add(avatarBody));
+
+      tank.matrixAutoUpdate = true;
+
+    }
+
+    if(tank.matrixAutoUpdate === true){
+      
+      if(alpha < 1)
+        alpha += 0.0001
+      
+      if(alpha > 1){
+
+        alpha = 0;
+        tank.matrixAutoUpdate = false;
+
+      }
+
+      if(changeX2 === 0 && changeY2 === 0 && changeZ2 === 1){
+
+        var pp = tank.clone().localToWorld(new THREE.Vector3(0, 0, 0));
+        pp.lerp(tankP.applyAxisAngle(new THREE.Vector3(0, 0, 1), Math.PI / 3), alpha);
+
+      }
+
+      tank.position.copy(pp);
+
+    }
 
   }
 
@@ -252,16 +420,36 @@ function changePlane(){
     motionHintBall.rotation.y = Math.atan2( -tank.worldToLocal(ball.localToWorld(new THREE.Vector3(0, 0, 0))).z, tank.worldToLocal(ball.localToWorld(new THREE.Vector3(0, 0, 0))).x );
 
     if(camera.position.y > 74)
-      camera.position.y = 74;
+      for (var i = 0; i < 388; i++)
+        wallPy[i].visible = false;
+    else
+      for (var i = 0; i < 388; i++)
+        if(wallPy[i].alive === true)
+          wallPy[i].visible = true;
 
     if(camera.position.y < -74)
-      camera.position.y = -74;
+      for (var i = 0; i < 388; i++)
+        wallNy[i].visible = false;
+    else
+      for (var i = 0; i < 388; i++)
+        if(wallNy[i].alive === true)
+          wallNy[i].visible = true;
 
     if(camera.position.z > 74)
-      camera.position.z = 74;
+      for (var i = 0; i < 388; i++)
+        wallPz[i].visible = false;
+    else
+      for (var i = 0; i < 388; i++)
+        if(wallPz[i].alive === true)
+          wallPz[i].visible = true;
 
     if(camera.position.z < -74)
-      camera.position.z = -74;
+      for (var i = 0; i < 388; i++)
+        wallNz[i].visible = false;
+    else
+      for (var i = 0; i < 388; i++)
+        if(wallNz[i].alive === true)
+          wallNz[i].visible = true;
 
   }
 
@@ -331,16 +519,36 @@ function changePlane(){
     motionHintBall.rotation.y = Math.atan2( -tank.worldToLocal(ball.localToWorld(new THREE.Vector3(0, 0, 0))).z, tank.worldToLocal(ball.localToWorld(new THREE.Vector3(0, 0, 0))).x );
 
     if(camera.position.x > 74)
-      camera.position.x = 74;
+      for (var i = 0; i < 388; i++)
+        wallPx[i].visible = false;
+    else
+      for (var i = 0; i < 388; i++)
+        if(wallPx[i].alive === true)
+          wallPx[i].visible = true;
 
     if(camera.position.x < -74)
-      camera.position.x = -74;
+      for (var i = 0; i < 388; i++)
+        wallNx[i].visible = false;
+    else
+      for (var i = 0; i < 388; i++)
+        if(wallNx[i].alive === true)
+          wallNx[i].visible = true;
 
     if(camera.position.y > 74)
-      camera.position.y = 74;
+      for (var i = 0; i < 388; i++)
+        wallPy[i].visible = false;
+    else
+      for (var i = 0; i < 388; i++)
+        if(wallPy[i].alive === true)
+          wallPy[i].visible = true;
 
     if(camera.position.y < -74)
-      camera.position.y = -74;
+      for (var i = 0; i < 388; i++)
+        wallNy[i].visible = false;
+    else
+      for (var i = 0; i < 388; i++)
+        if(wallNy[i].alive === true)
+          wallNy[i].visible = true;
     
   }
 
@@ -410,16 +618,36 @@ function changePlane(){
     motionHintBall.rotation.y = Math.atan2( -tank.worldToLocal(ball.localToWorld(new THREE.Vector3(0, 0, 0))).z, tank.worldToLocal(ball.localToWorld(new THREE.Vector3(0, 0, 0))).x );
 
     if(camera.position.x > 74)
-      camera.position.x = 74;
+      for (var i = 0; i < 388; i++)
+        wallPx[i].visible = false;
+    else
+      for (var i = 0; i < 388; i++)
+        if(wallPx[i].alive === true)
+          wallPx[i].visible = true;
 
     if(camera.position.x < -74)
-      camera.position.x = -74;
+      for (var i = 0; i < 388; i++)
+        wallNx[i].visible = false;
+    else
+      for (var i = 0; i < 388; i++)
+        if(wallNx[i].alive === true)
+          wallNx[i].visible = true;
 
     if(camera.position.y > 74)
-      camera.position.y = 74;
+      for (var i = 0; i < 388; i++)
+        wallPy[i].visible = false;
+    else
+      for (var i = 0; i < 388; i++)
+        if(wallPy[i].alive === true)
+          wallPy[i].visible = true;
 
     if(camera.position.y < -74)
-      camera.position.y = -74;
+      for (var i = 0; i < 388; i++)
+        wallNy[i].visible = false;
+    else
+      for (var i = 0; i < 388; i++)
+        if(wallNy[i].alive === true)
+          wallNy[i].visible = true;
 
   }
 

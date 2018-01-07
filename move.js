@@ -1,9 +1,9 @@
 
 function Matrix4Update(newPos, newDir, newMiniPos) {
 
-  var localX = newDir.clone();
-  var localY = new THREE.Vector3(changeX, changeY, changeZ);
-  var localZ = new THREE.Vector3();
+  localX = newDir.clone();
+  localY = new THREE.Vector3(changeX, changeY, changeZ);
+  localZ = new THREE.Vector3();
   localZ.crossVectors(localX, localY);
   tank.matrix.makeBasis(localX, localY, localZ);
   tank.matrix.setPosition(newPos);

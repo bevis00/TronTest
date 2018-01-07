@@ -238,6 +238,7 @@ function buildLightBall() {
       emissive: 0xff0000
   }));
   ball.add(ballLight);
+  ball.visible = false;
   scene.add(ball);
 
 }
@@ -246,11 +247,10 @@ function buildBigBall() {
 
   bigBall = new THREE.Mesh(new THREE.SphereGeometry(40,32,32), material);
   bigBall.name = "Breakout";
-  ball.visible = false;
   pickables.push(bigBall);
 
   var wireframeBall = new THREE.Mesh(new THREE.SphereGeometry(40.7,24,12), new THREE.MeshBasicMaterial( { color: 0xffffff, wireframe: true, transparent: true } ));
-  wireframeBall.visible = false;
+
   scene.add(bigBall, wireframeBall);
 
 }
@@ -285,37 +285,21 @@ function buildLight() {
   var ambLight = new THREE.AmbientLight( 0x303030 ); // soft white light
   scene.add( ambLight );
 
-  var pointLight1 = new THREE.PointLight( 0xffffff, 1.5, 150 );
-	pointLight1.position.set( -50, 50, -50 );
+  var pointLight1 = new THREE.PointLight( 0xffffff, 1, 115 );
+	pointLight1.position.set( -37.5, 37.5, -37.5 );
 	scene.add( pointLight1 );
 
-  var pointLight2 = new THREE.PointLight( 0xffffff, 1.5, 150 );
-	pointLight2.position.set( -50, 50, 50 );
+  var pointLight2 = new THREE.PointLight( 0xffffff, 1, 115 );
+	pointLight2.position.set( -37.5, 37.5, 37.5 );
 	scene.add( pointLight2 );
 
-  var pointLight3 = new THREE.PointLight( 0xffffff, 1.5, 150 );
-	pointLight3.position.set( 50, -50, -50 );
+  var pointLight3 = new THREE.PointLight( 0xffffff, 1, 115 );
+	pointLight3.position.set( 37.5, -37.5, -37.5 );
 	scene.add( pointLight3 );
 
-  var pointLight4 = new THREE.PointLight( 0xffffff, 1.5, 150 );
-	pointLight4.position.set( 50, -50, 50 );
+  var pointLight4 = new THREE.PointLight( 0xffffff, 1, 115 );
+	pointLight4.position.set( 37.5, -37.5, 37.5 );
 	scene.add( pointLight4 );
-
-  var pointLight5 = new THREE.PointLight( 0xffffff, 1.5, 150 );
-  pointLight5.position.set( -50, -50, -50 );
-  scene.add( pointLight5 );
-
-  var pointLight6 = new THREE.PointLight( 0xffffff, 1.5, 150 );
-  pointLight6.position.set( -50, -50, 50 );
-  scene.add( pointLight6 );
-
-  var pointLight7 = new THREE.PointLight( 0xffffff, 1.5, 150 );
-  pointLight7.position.set( 50, 50, -50 );
-  scene.add( pointLight7 );
-
-  var pointLight8 = new THREE.PointLight( 0xffffff, 1.5, 150 );
-  pointLight8.position.set( 37.5, 37.5, 37.5 );
-  scene.add( pointLight8 );
 
   var pointLightMid = new THREE.PointLight (0xffffff, 1, 200);
   pointLightMid.position.set(0,0,0);
@@ -353,6 +337,8 @@ function buildWall(){
 
     wallPx[i].rotation.y = -Math.PI / 2;
     wallPx[i].name = "wallPx";
+    wallPx[i].alive = true;
+    wallPx[i].material.color = new THREE.Color(0x8749b7);
 
   }
 
@@ -363,9 +349,6 @@ function buildWall(){
     for (var j = 0; j < 14; j++, count++) {
 
       wallPx[count].position.set(78.5, 72 - i * 12, -65 + j * 10);
-
-      if(count%2 !== 0)
-        wallPx[count].visible = false;
 
     }
 
@@ -403,6 +386,7 @@ function buildWall(){
 
     wallNx[i].rotation.y = Math.PI / 2;
     wallNx[i].name = "wallNx";
+    wallNx[i].alive = true;
     wallNx[i].material.color = new THREE.Color(0x8749b7);
 
   }
@@ -414,9 +398,6 @@ function buildWall(){
     for (var j = 0; j < 14; j++, count++) {
 
       wallNx[count].position.set(-78.5, 72 - i * 12, 65 - j * 10);
-
-      if(count%2 !== 0)
-        wallNx[count].visible = false;
 
     }
 
@@ -454,6 +435,7 @@ function buildWall(){
 
     wallPy[i].rotation.x = Math.PI / 2;
     wallPy[i].name = "wallPy";
+    wallPy[i].alive = true;
     wallPy[i].material.color = new THREE.Color(0x408449);
 
   }
@@ -465,9 +447,6 @@ function buildWall(){
     for (var j = 0; j < 14; j++, count++) {
 
       wallPy[count].position.set(-65 + j * 10, 78.5, 72 - i * 12);
-
-      if(count%2 !== 0)
-        wallPy[count].visible = false;
 
     }
 
@@ -505,6 +484,7 @@ function buildWall(){
 
     wallNy[i].rotation.x = -Math.PI / 2;
     wallNy[i].name = "wallNy";
+    wallNy[i].alive = true;
     wallNy[i].material.color = new THREE.Color(0xb78549);
 
   }
@@ -516,9 +496,6 @@ function buildWall(){
     for (var j = 0; j < 14; j++, count++) {
 
       wallNy[count].position.set(-65 + j * 10, -78.5, -72 + i * 12);
-
-      if(count%2 !== 0)
-        wallNy[count].visible = false;
 
     }
 
@@ -556,6 +533,7 @@ function buildWall(){
 
     wallPz[i].rotation.y = Math.PI;
     wallPz[i].name = "wallPz";
+    wallPz[i].alive = true;
     wallPz[i].material.color = new THREE.Color(0xa1b749);
 
   }
@@ -567,9 +545,6 @@ function buildWall(){
     for (var j = 0; j < 14; j++, count++) {
 
       wallPz[count].position.set(65 - j * 10, 72 - i * 12, 78.5);
-
-      if(count%2 !== 0)
-        wallPz[count].visible = false;
 
     }
 
@@ -606,6 +581,7 @@ function buildWall(){
   for (var i = 0; i < 388; i++) {
 
     wallNz[i].name = "wallNz";
+    wallNz[i].alive = true;
     wallNz[i].material.color = new THREE.Color(0x4949b7);
 
   }
@@ -617,9 +593,6 @@ function buildWall(){
     for (var j = 0; j < 14; j++, count++) {
 
       wallNz[count].position.set(-65 + j * 10, 72 - i * 12, -78.5);
-
-      if(count%2 !== 0)
-        wallNz[count].visible = false;
 
     }
 

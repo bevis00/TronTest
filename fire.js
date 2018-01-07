@@ -46,7 +46,7 @@ function raytest() {
     }
     if (intersects[0].object.name ==="Breakout"){
 
-      n = intersects[0].point.clone().sub(new THREE.Vector3(0,0,0));
+      n = (intersects[0].point.clone().sub(new THREE.Vector3(0,0,0))).normalize();
     }
 
       var r = laserdir.sub(n.multiplyScalar(2 * (laserdir.dot(n))));
@@ -94,7 +94,7 @@ function raytest() {
         }
         if (intersectsR[0].object.name ==="Breakout"){
 
-          n = intersectsR[0].point.clone().sub(new THREE.Vector3(0,0,0));
+          n = (intersectsR[0].point.clone().sub(new THREE.Vector3(0,0,0))).normalize();
         }
 
 
@@ -131,5 +131,5 @@ function fireBall(){
 
 function reflactVel(n){
   vel.sub(n.multiplyScalar(2 * (vel.dot(n)))).multiplyScalar(0.7);
-  console.log(vel.length());
+  //console.log(vel.length());
 }
