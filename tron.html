@@ -139,6 +139,8 @@
   var angle = 0;
   var change = 0;
   var changeX = 0, changeY = 1, changeZ = 0;
+  var quat1 = new THREE.Quaternion();
+  var quat2 = new THREE.Quaternion();
 
   var pickables = [];
   var planes = [];
@@ -168,6 +170,7 @@
   var pos1, pos2, quat1, quat2;
   var localX, localY, localZ;
   var changeX2 = 0, changeY2 = 0, changeZ2 = 0;
+  var ban = false;
 
   init();
   animate();
@@ -450,24 +453,29 @@
 
     }
 
-    if (keyboard.pressed("A")) {
-
-      change += 0.035;
-
-      tire.rotation.z -= 0.2;
-      tire2.rotation.z += 0.2;
-      scene.remove(line, lineR, lineR2);
+    if(ban === false){
 
 
-    }
+      if (keyboard.pressed("A")) {
 
-    if (keyboard.pressed("D")) {
+        change += 0.035;
 
-      change += -0.035;
+        tire.rotation.z -= 0.2;
+        tire2.rotation.z += 0.2;
+        scene.remove(line, lineR, lineR2);
 
-      tire.rotation.z += 0.2;
-      tire2.rotation.z -= 0.2;
-      scene.remove(line, lineR, lineR2);
+
+      }
+
+      if (keyboard.pressed("D")) {
+
+        change += -0.035;
+
+        tire.rotation.z += 0.2;
+        tire2.rotation.z -= 0.2;
+        scene.remove(line, lineR, lineR2);
+
+      }
 
     }
 
