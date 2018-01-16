@@ -56,7 +56,7 @@ function changePlane(){
       tankP = tank.clone().localToWorld(new THREE.Vector3(0, 0, 0)).add(avatarBody.clone().add(avatarBody));
 
       ban = true;
-      tank.matrixAutoUpdate = true;
+      changeControl = true;
 
     }
 
@@ -70,7 +70,7 @@ function changePlane(){
       tankP = tank.clone().localToWorld(new THREE.Vector3(0, 0, 0)).add(avatarBody.clone().add(avatarBody));
 
       ban = true;
-      tank.matrixAutoUpdate = true;
+      changeControl = true;
 
     }
 
@@ -84,7 +84,7 @@ function changePlane(){
       tankP = tank.clone().localToWorld(new THREE.Vector3(0, 0, 0)).add(avatarBody.clone().add(avatarBody));
 
       ban = true;
-      tank.matrixAutoUpdate = true;
+      changeControl = true;
 
     }
 
@@ -98,15 +98,16 @@ function changePlane(){
       tankP = tank.clone().localToWorld(new THREE.Vector3(0, 0, 0)).add(avatarBody.clone().add(avatarBody));
 
       ban = true;
-      tank.matrixAutoUpdate = true;
+      changeControl = true;
 
     }
 
-    if(tank.matrixAutoUpdate === true){
+    if(changeControl === true){
       
       if(alpha < 1)
         alpha += 0.0001;
       
+      alpha2+=0.01;
 
       if(changeX2 === 0 && changeY2 === 0 && changeZ2 === 1){
 
@@ -135,8 +136,8 @@ function changePlane(){
         pp.lerp(tankP.applyAxisAngle(new THREE.Vector3(-1, 0, 0), Math.PI / 3), alpha);
 
       }
+      
       changePlaneAnimation(detection);
-      tank.matrixAutoUpdate = false;
       tank.matrix.setPosition(pp);
       
 
@@ -153,7 +154,8 @@ function changePlane(){
     changeZ = 0;
 
     alpha = 0;
-    tank.matrixAutoUpdate = false;
+    alpha2 = 0;
+    changeControl = false;
     ban = false;
 
     avatarBody = detection.clone().sub(tank.localToWorld(new THREE.Vector3(0, 0, 0)));
@@ -171,7 +173,7 @@ function changePlane(){
     changeZ = 0;
 
     alpha = 0;
-    tank.matrixAutoUpdate = false;
+    changeControl = false;
     ban = false;
 
     avatarBody = detection.clone().sub(tank.localToWorld(new THREE.Vector3(0, 0, 0)));
@@ -189,7 +191,7 @@ function changePlane(){
     changeZ = 1;
 
     alpha = 0;
-    tank.matrixAutoUpdate = false;
+    changeControl = false;
     ban = false;
 
     avatarBody = detection.clone().sub(tank.localToWorld(new THREE.Vector3(0, 0, 0)));
@@ -207,7 +209,7 @@ function changePlane(){
     changeZ = -1;
 
     alpha = 0;
-    tank.matrixAutoUpdate = false;
+    changeControl = false;
     ban = false;
 
     avatarBody = detection.clone().sub(tank.localToWorld(new THREE.Vector3(0, 0, 0)));
@@ -269,7 +271,7 @@ function changePlane(){
       tankP = tank.clone().localToWorld(new THREE.Vector3(0, 0, 0)).add(avatarBody.clone().add(avatarBody));
 
       ban = true;
-      tank.matrixAutoUpdate = true;
+      changeControl = true;
 
     }
 
@@ -283,7 +285,7 @@ function changePlane(){
       tankP = tank.clone().localToWorld(new THREE.Vector3(0, 0, 0)).add(avatarBody.clone().add(avatarBody));
 
       ban = true;
-      tank.matrixAutoUpdate = true;
+      changeControl = true;
 
     }
 
@@ -297,7 +299,7 @@ function changePlane(){
       tankP = tank.clone().localToWorld(new THREE.Vector3(0, 0, 0)).add(avatarBody.clone().add(avatarBody));
 
       ban = true;
-      tank.matrixAutoUpdate = true;
+      changeControl = true;
 
     }
 
@@ -311,11 +313,11 @@ function changePlane(){
       tankP = tank.clone().localToWorld(new THREE.Vector3(0, 0, 0)).add(avatarBody.clone().add(avatarBody));
 
       ban = true;
-      tank.matrixAutoUpdate = true;
+      changeControl = true;
 
     }
 
-    if(tank.matrixAutoUpdate === true){
+    if(changeControl === true){
       
       if(alpha < 1)
         alpha += 0.0001;
@@ -349,7 +351,7 @@ function changePlane(){
 
       }
 
-      tank.matrixAutoUpdate = false;
+      changeControl = false;
       tank.matrix.setPosition(pp);
 
     }
@@ -364,7 +366,7 @@ function changePlane(){
     changeZ = 0;
 
     alpha = 0;
-    tank.matrixAutoUpdate = false;
+    changeControl = false;
     ban = false;
 
     avatarBody = detection.clone().sub(tank.localToWorld(new THREE.Vector3(0, 0, 0)));
@@ -382,7 +384,7 @@ function changePlane(){
     changeZ = 0;
 
     alpha = 0;
-    tank.matrixAutoUpdate = false;
+    changeControl = false;
     ban = false;
 
     avatarBody = detection.clone().sub(tank.localToWorld(new THREE.Vector3(0, 0, 0)));
@@ -400,7 +402,7 @@ function changePlane(){
     changeZ = 1;
 
     alpha = 0;
-    tank.matrixAutoUpdate = false;
+    changeControl = false;
     ban = false;
 
     avatarBody = detection.clone().sub(tank.localToWorld(new THREE.Vector3(0, 0, 0)));
@@ -418,7 +420,7 @@ function changePlane(){
     changeZ = -1;
 
     alpha = 0;
-    tank.matrixAutoUpdate = false;
+    changeControl = false;
     ban = false;
 
     avatarBody = detection.clone().sub(tank.localToWorld(new THREE.Vector3(0, 0, 0)));
@@ -480,7 +482,7 @@ function changePlane(){
       tankP = tank.clone().localToWorld(new THREE.Vector3(0, 0, 0)).add(avatarBody.clone().add(avatarBody));
 
       ban = true;
-      tank.matrixAutoUpdate = true;
+      changeControl = true;
 
     }
 
@@ -494,7 +496,7 @@ function changePlane(){
       tankP = tank.clone().localToWorld(new THREE.Vector3(0, 0, 0)).add(avatarBody.clone().add(avatarBody));
 
       ban = true;
-      tank.matrixAutoUpdate = true;
+      changeControl = true;
 
     }
 
@@ -508,7 +510,7 @@ function changePlane(){
       tankP = tank.clone().localToWorld(new THREE.Vector3(0, 0, 0)).add(avatarBody.clone().add(avatarBody));
 
       ban = true;
-      tank.matrixAutoUpdate = true;
+      changeControl = true;
 
     }
 
@@ -522,11 +524,11 @@ function changePlane(){
       tankP = tank.clone().localToWorld(new THREE.Vector3(0, 0, 0)).add(avatarBody.clone().add(avatarBody));
 
       ban = true;
-      tank.matrixAutoUpdate = true;
+      changeControl = true;
 
     }
 
-    if(tank.matrixAutoUpdate === true){
+    if(changeControl === true){
       
       if(alpha < 1)
         alpha += 0.0001;
@@ -559,7 +561,7 @@ function changePlane(){
 
       }
 
-      tank.matrixAutoUpdate = false;
+      changeControl = false;
       tank.matrix.setPosition(pp);
 
     }
@@ -574,7 +576,7 @@ function changePlane(){
     changeZ = 0;
 
     alpha = 0;
-    tank.matrixAutoUpdate = false;
+    changeControl = false;
     ban = false;
 
     avatarBody = detection.clone().sub(tank.localToWorld(new THREE.Vector3(0, 0, 0)));
@@ -592,7 +594,7 @@ function changePlane(){
     changeZ = 0;
 
     alpha = 0;
-    tank.matrixAutoUpdate = false;
+    changeControl = false;
     ban = false;
 
     avatarBody = detection.clone().sub(tank.localToWorld(new THREE.Vector3(0, 0, 0)));
@@ -610,7 +612,7 @@ function changePlane(){
     changeZ = -1;
 
     alpha = 0;
-    tank.matrixAutoUpdate = false;
+    changeControl = false;
     ban = false;
 
     avatarBody = detection.clone().sub(tank.localToWorld(new THREE.Vector3(0, 0, 0)));
@@ -628,7 +630,7 @@ function changePlane(){
     changeZ = 1;
 
     alpha = 0;
-    tank.matrixAutoUpdate = false;
+    changeControl = false;
     ban = false;
 
     avatarBody = detection.clone().sub(tank.localToWorld(new THREE.Vector3(0, 0, 0)));
@@ -690,7 +692,7 @@ function changePlane(){
       tankP = tank.clone().localToWorld(new THREE.Vector3(0, 0, 0)).add(avatarBody.clone().add(avatarBody));
 
       ban = true;
-      tank.matrixAutoUpdate = true;
+      changeControl = true;
 
     }
 
@@ -704,7 +706,7 @@ function changePlane(){
       tankP = tank.clone().localToWorld(new THREE.Vector3(0, 0, 0)).add(avatarBody.clone().add(avatarBody));
 
       ban = true;
-      tank.matrixAutoUpdate = true;
+      changeControl = true;
 
     }
 
@@ -718,7 +720,7 @@ function changePlane(){
       tankP = tank.clone().localToWorld(new THREE.Vector3(0, 0, 0)).add(avatarBody.clone().add(avatarBody));
 
       ban = true;
-      tank.matrixAutoUpdate = true;
+      changeControl = true;
 
     }
 
@@ -732,11 +734,11 @@ function changePlane(){
       tankP = tank.clone().localToWorld(new THREE.Vector3(0, 0, 0)).add(avatarBody.clone().add(avatarBody));
 
       ban = true;
-      tank.matrixAutoUpdate = true;
+      changeControl = true;
 
     }
 
-    if(tank.matrixAutoUpdate === true){
+    if(changeControl === true){
       
       if(alpha < 1)
         alpha += 0.0001;
@@ -769,7 +771,7 @@ function changePlane(){
 
       }
 
-      tank.matrixAutoUpdate = false;
+      changeControl = false;
       tank.matrix.setPosition(pp);
 
     }
@@ -784,7 +786,7 @@ function changePlane(){
     changeZ = 0;
 
     alpha = 0;
-    tank.matrixAutoUpdate = false;
+    changeControl = false;
     ban = false;
 
     avatarBody = detection.clone().sub(tank.localToWorld(new THREE.Vector3(0, 0, 0)));
@@ -802,7 +804,7 @@ function changePlane(){
     changeZ = 0;
 
     alpha = 0;
-    tank.matrixAutoUpdate = false;
+    changeControl = false;
     ban = false;
 
     avatarBody = detection.clone().sub(tank.localToWorld(new THREE.Vector3(0, 0, 0)));
@@ -820,7 +822,7 @@ function changePlane(){
     changeZ = -1;
 
     alpha = 0;
-    tank.matrixAutoUpdate = false;
+    changeControl = false;
     ban = false;
 
     avatarBody = detection.clone().sub(tank.localToWorld(new THREE.Vector3(0, 0, 0)));
@@ -838,7 +840,7 @@ function changePlane(){
     changeZ = 1;
 
     alpha = 0;
-    tank.matrixAutoUpdate = false;
+    changeControl = false;
     ban = false;
 
     avatarBody = detection.clone().sub(tank.localToWorld(new THREE.Vector3(0, 0, 0)));
@@ -900,7 +902,7 @@ function changePlane(){
       tankP = tank.clone().localToWorld(new THREE.Vector3(0, 0, 0)).add(avatarBody.clone().add(avatarBody));
 
       ban = true;
-      tank.matrixAutoUpdate = true;
+      changeControl = true;
 
     }
 
@@ -914,7 +916,7 @@ function changePlane(){
       tankP = tank.clone().localToWorld(new THREE.Vector3(0, 0, 0)).add(avatarBody.clone().add(avatarBody));
 
       ban = true;
-      tank.matrixAutoUpdate = true;
+      changeControl = true;
 
     }
 
@@ -928,7 +930,7 @@ function changePlane(){
       tankP = tank.clone().localToWorld(new THREE.Vector3(0, 0, 0)).add(avatarBody.clone().add(avatarBody));
 
       ban = true;
-      tank.matrixAutoUpdate = true;
+      changeControl = true;
 
     }
 
@@ -942,11 +944,11 @@ function changePlane(){
       tankP = tank.clone().localToWorld(new THREE.Vector3(0, 0, 0)).add(avatarBody.clone().add(avatarBody));
 
       ban = true;
-      tank.matrixAutoUpdate = true;
+      changeControl = true;
 
     }
 
-    if(tank.matrixAutoUpdate === true){
+    if(changeControl === true){
       
       if(alpha < 1)
         alpha += 0.0001;
@@ -980,7 +982,7 @@ function changePlane(){
 
       }
 
-      tank.matrixAutoUpdate = false;
+      changeControl = false;
       tank.matrix.setPosition(pp);
 
     }
@@ -996,7 +998,7 @@ function changePlane(){
     changeZ = 0;
 
     alpha = 0;
-    tank.matrixAutoUpdate = false;
+    changeControl = false;
     ban = false;
 
     avatarBody = detection.clone().sub(tank.localToWorld(new THREE.Vector3(0, 0, 0)));
@@ -1014,7 +1016,7 @@ function changePlane(){
     changeZ = 0;
 
     alpha = 0;
-    tank.matrixAutoUpdate = false;
+    changeControl = false;
     ban = false;
 
     avatarBody = detection.clone().sub(tank.localToWorld(new THREE.Vector3(0, 0, 0)));
@@ -1032,7 +1034,7 @@ function changePlane(){
     changeZ = 0;
 
     alpha = 0;
-    tank.matrixAutoUpdate = false;
+    changeControl = false;
     ban = false;
 
     avatarBody = detection.clone().sub(tank.localToWorld(new THREE.Vector3(0, 0, 0)));
@@ -1050,7 +1052,7 @@ function changePlane(){
     changeZ = 0;
 
     alpha = 0;
-    tank.matrixAutoUpdate = false;
+    changeControl = false;
     ban = false;
 
     avatarBody = detection.clone().sub(tank.localToWorld(new THREE.Vector3(0, 0, 0)));
@@ -1112,7 +1114,7 @@ function changePlane(){
       tankP = tank.clone().localToWorld(new THREE.Vector3(0, 0, 0)).add(avatarBody.clone().add(avatarBody));
 
       ban = true;
-      tank.matrixAutoUpdate = true;
+      changeControl = true;
 
     }
 
@@ -1126,7 +1128,7 @@ function changePlane(){
       tankP = tank.clone().localToWorld(new THREE.Vector3(0, 0, 0)).add(avatarBody.clone().add(avatarBody));
 
       ban = true;
-      tank.matrixAutoUpdate = true;
+      changeControl = true;
 
     }
 
@@ -1140,7 +1142,7 @@ function changePlane(){
       tankP = tank.clone().localToWorld(new THREE.Vector3(0, 0, 0)).add(avatarBody.clone().add(avatarBody));
 
       ban = true;
-      tank.matrixAutoUpdate = true;
+      changeControl = true;
 
     }
 
@@ -1154,11 +1156,11 @@ function changePlane(){
       tankP = tank.clone().localToWorld(new THREE.Vector3(0, 0, 0)).add(avatarBody.clone().add(avatarBody));
 
       ban = true;
-      tank.matrixAutoUpdate = true;
+      changeControl = true;
 
     }
 
-    if(tank.matrixAutoUpdate === true){
+    if(changeControl === true){
       
       if(alpha < 1)
         alpha += 0.0001;
@@ -1192,7 +1194,7 @@ function changePlane(){
 
       }
 
-      tank.matrixAutoUpdate = false;
+      changeControl = false;
       tank.matrix.setPosition(pp);
 
     }
@@ -1208,7 +1210,7 @@ function changePlane(){
     changeZ = 0;
 
     alpha = 0;
-    tank.matrixAutoUpdate = false;
+    changeControl = false;
     ban = false;
 
     avatarBody = detection.clone().sub(tank.localToWorld(new THREE.Vector3(0, 0, 0)));
@@ -1226,7 +1228,7 @@ function changePlane(){
     changeZ = 0;
 
     alpha = 0;
-    tank.matrixAutoUpdate = false;
+    changeControl = false;
     ban = false;
 
     avatarBody = detection.clone().sub(tank.localToWorld(new THREE.Vector3(0, 0, 0)));
@@ -1244,7 +1246,7 @@ function changePlane(){
     changeZ = 0;
 
     alpha = 0;
-    tank.matrixAutoUpdate = false;
+    changeControl = false;
     ban = false;
 
     avatarBody = detection.clone().sub(tank.localToWorld(new THREE.Vector3(0, 0, 0)));
@@ -1262,7 +1264,7 @@ function changePlane(){
     changeZ = 0;
 
     alpha = 0;
-    tank.matrixAutoUpdate = false;
+    changeControl = false;
     ban = false;
 
     avatarBody = detection.clone().sub(tank.localToWorld(new THREE.Vector3(0, 0, 0)));
@@ -1275,12 +1277,12 @@ function changePlane(){
 }
 
 function changePlaneAnimation(detection){
-  tank.matrixAutoUpdate = true;
+  changeControl = true;
   quat1.setFromRotationMatrix ( tank.matrix);
-  quat2.setFromUnitVectors ( detection, vP );
+  quat2.setFromUnitVectors ( detection.clone().normalize(), vP/*.clone().projectOnPlane(new THREE.Vector3(-1, 0, 0))*/ );
   var qm = quat1.clone();
-  qm.slerp(quat2,alpha + 0.4);
+  qm.slerp(quat2,alpha2);
 
   tank.matrix.makeRotationFromQuaternion ( qm );
-  tank.matrixAutoUpdate = false;
+  changeControl = false;
 }

@@ -166,10 +166,11 @@
   var ballPosTemp = new THREE.Vector3();
   var refalctionDec = false;
   var bigBallrefalctionDec = false;
-  var alpha = 0;
+  var alpha = 0, alpha2 = 0;
   var pos1, pos2, quat1, quat2;
   var localX, localY, localZ;
   var changeX2 = 0, changeY2 = 0, changeZ2 = 0;
+  var changeControl = false;
   var ban = false;
 
   init();
@@ -404,8 +405,6 @@
     tank.add(motionHint, motionHintBall);
 
     /////////////////////////////////////////////////////////////////////////////
-
-    tank.matrixAutoUpdate = false;
 
     buildWall();
 
