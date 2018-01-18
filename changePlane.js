@@ -1,4 +1,3 @@
-
 function changePlane(){
 
   var detection = tank.localToWorld(new THREE.Vector3(10, 0, 0));
@@ -111,6 +110,14 @@ function changePlane(){
 
       if(changeX2 === 0 && changeY2 === 0 && changeZ2 === 1){
 
+        quat1 = new THREE.Quaternion(0, 0, 0, 1);
+        quat2 = new THREE.Quaternion(0, 0, 1/Math.sqrt(2), 1/Math.sqrt(2));  
+
+        var qm = quat1.clone();
+        qm.slerp(quat2, alpha2);
+
+        tank.matrix.makeRotationFromQuaternion (qm);
+
         var pp = tank.clone().localToWorld(new THREE.Vector3(0, 0, 0));
         pp.lerp(tankP.applyAxisAngle(new THREE.Vector3(0, 0, 1), Math.PI / 3), alpha);
 
@@ -136,10 +143,8 @@ function changePlane(){
         pp.lerp(tankP.applyAxisAngle(new THREE.Vector3(-1, 0, 0), Math.PI / 3), alpha);
 
       }
-      
-      changePlaneAnimation(detection);
-      tank.matrix.setPosition(pp);
-      
+
+      tank.matrix.setPosition(pp);     
 
     }
 
@@ -162,6 +167,8 @@ function changePlane(){
     tankP = tank.clone().localToWorld(new THREE.Vector3(0, 0, 0)).add(avatarBody.clone().add(avatarBody));
     v = tankP.clone().sub(detection);
     vP = v.clone().applyAxisAngle(new THREE.Vector3(0, 0, 1), Math.PI / 2);
+
+    tank.matrix.elements[12] = 67;
 
   }
 
@@ -1274,15 +1281,4 @@ function changePlane(){
 
   }
   
-}
-
-function changePlaneAnimation(detection){
-  changeControl = true;
-  quat1.setFromRotationMatrix ( tank.matrix);
-  quat2.setFromUnitVectors ( detection.clone().normalize(), vP/*.clone().projectOnPlane(new THREE.Vector3(-1, 0, 0))*/ );
-  var qm = quat1.clone();
-  qm.slerp(quat2,alpha2);
-
-  tank.matrix.makeRotationFromQuaternion ( qm );
-  changeControl = false;
 }

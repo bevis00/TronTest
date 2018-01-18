@@ -1,12 +1,18 @@
 
 function Matrix4Update(newPos, newDir, newMiniPos) {
 
+  tank.matrixAutoUpdate = false;
+  var pos = new THREE.Vector3 (  // copy NOW pos from matrix
+    tank.matrix.elements[12], tank.matrix.elements[13],
+    tank.matrix.elements[14]);
+  var newPos4 = pos.clone().add (newPos);
+
   localX = newDir.clone();
   localY = new THREE.Vector3(changeX, changeY, changeZ);
   localZ = new THREE.Vector3();
   localZ.crossVectors(localX, localY);
   tank.matrix.makeBasis(localX, localY, localZ);
-  tank.matrix.setPosition(newPos);
+  tank.matrix.setPosition(newPos4);
   tank.matrixAutoUpdate = false;
 
   //////////////////////////////////////////////////////////////////////////////
@@ -19,11 +25,10 @@ function Matrix4Update(newPos, newDir, newMiniPos) {
 
 function moveOnNy() {
 
-  var newPos = tank.localToWorld(new THREE.Vector3(go, 0, 0));
-  newPos.y = -67;
+  var newPos = new THREE.Vector3(go, 0, 0).applyAxisAngle(new THREE.Vector3(0, 1, 0), totalChange);
 
-  var newMiniPos = newPos.clone();
-  newMiniPos.y = -75
+  var newMiniPos = tank.localToWorld(new THREE.Vector3(go, 0, 0));
+  newMiniPos.y = -75;
 
   var newDir = vP.normalize();
   newDir.applyAxisAngle(new THREE.Vector3(0, 1, 0), change);
@@ -39,11 +44,10 @@ function moveOnNy() {
 
 function moveOnPx() {
 
-  var newPos = tank.localToWorld(new THREE.Vector3(go, 0, 0));
-  newPos.x = 67;
+  var newPos = new THREE.Vector3(0, go, 0).applyAxisAngle(new THREE.Vector3(-1, 0, 0), totalChange);
 
-  var newMiniPos = newPos.clone();
-  newMiniPos.x = 75
+  var newMiniPos = tank.localToWorld(new THREE.Vector3(go, 0, 0));
+  newMiniPos.x = 75;
 
   var newDir = vP.normalize();
   newDir.applyAxisAngle(new THREE.Vector3(-1, 0, 0), change);
@@ -59,10 +63,9 @@ function moveOnPx() {
 
 function moveOnPy() {
 
-  var newPos = tank.localToWorld(new THREE.Vector3(go, 0, 0));
-  newPos.y = 67;
+  var newPos = new THREE.Vector3(-go, 0, 0).applyAxisAngle(new THREE.Vector3(0, -1, 0), totalChange);
 
-  var newMiniPos = newPos.clone();
+  var newMiniPos = tank.localToWorld(new THREE.Vector3(go, 0, 0));
   newMiniPos.y = 75
 
   var newDir = vP.normalize();

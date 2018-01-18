@@ -138,6 +138,7 @@
   var go = 0;
   var angle = 0;
   var change = 0;
+  var totalChange = 0;
   var changeX = 0, changeY = 1, changeZ = 0;
   var quat1 = new THREE.Quaternion();
   var quat2 = new THREE.Quaternion();
@@ -410,6 +411,12 @@
 
     //stats = new Stats();
     //document.body.appendChild( stats.dom );
+    tank.matrix.setPosition	(new THREE.Vector3(0,-67,0));
+    quat1 = new THREE.Quaternion();
+    quat2 = new THREE.Quaternion();
+    quat1.setFromRotationMatrix ( tank.matrix );
+    ///////////////////////////////////////////////////////////////////////////////
+
     setInterval(blink, 300);
 
     document.body.appendChild(renderer.domElement);
@@ -452,13 +459,14 @@
 
     }
 
+
     if(ban === false){
 
 
       if (keyboard.pressed("A")) {
 
         change += 0.035;
-
+        totalChange += change;
         tire.rotation.z -= 0.2;
         tire2.rotation.z += 0.2;
         scene.remove(line, lineR, lineR2);
@@ -466,10 +474,11 @@
 
       }
 
+
       if (keyboard.pressed("D")) {
 
         change += -0.035;
-
+        totalChange += change;
         tire.rotation.z += 0.2;
         tire2.rotation.z -= 0.2;
         scene.remove(line, lineR, lineR2);
@@ -590,12 +599,12 @@
       flySound.play();
 
       Targeting();
-      
+
       if( ballPos.distanceTo(bigBall.localToWorld(new THREE.Vector3(0,0,0))) < 40 ){
         ballPosTemp = ballPos.clone();
         bigBallrefalctionDec = true;
       }
-  
+
       for (var i = 0; i < 362; i++) {
 
           if (ballPos.z > wallPx[i].position.z - 5.3 && ballPos.z < wallPx[i].position.z + 5.3 && ballPos.y > wallPx[i].position.y - 3.3 && ballPos.y < wallPx[i].position.y + 3.3 && ballPos.x > wallPx[i].position.x - 4  && ballPos.x < wallPx[i].position.x + 4 && wallPx[i].alive === true ){
@@ -766,7 +775,7 @@
         ballLight.color = new THREE.Color(0x0000ff);
 
       }
-      
+
 
       if( bigBallrefalctionDec && vel.length() > 10){
 
