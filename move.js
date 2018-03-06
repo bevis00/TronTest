@@ -2,12 +2,12 @@
 function Matrix4Update(newPos, newDir, newMiniPos) {
 
   tank.matrixAutoUpdate = false;
-  var pos = new THREE.Vector3 (  // copy NOW pos from matrix
+  pos = new THREE.Vector3 (  // copy NOW pos from matrix
     tank.matrix.elements[12], tank.matrix.elements[13],
     tank.matrix.elements[14]);
   var newPos4 = pos.clone().add (newPos);
 
-  localX = newDir.clone();
+  localX = newDir.clone().normalize();
   localY = new THREE.Vector3(changeX, changeY, changeZ);
   localZ = new THREE.Vector3();
   localZ.crossVectors(localX, localY);
@@ -30,7 +30,7 @@ function moveOnNy() {
   var newMiniPos = tank.localToWorld(new THREE.Vector3(go, 0, 0));
   newMiniPos.y = -75;
 
-  var newDir = vP.normalize();
+  var newDir = newDirNy;
   newDir.applyAxisAngle(new THREE.Vector3(0, 1, 0), change);
   Matrix4Update(newPos, newDir, newMiniPos);
 
@@ -49,7 +49,7 @@ function moveOnPx() {
   var newMiniPos = tank.localToWorld(new THREE.Vector3(go, 0, 0));
   newMiniPos.x = 75;
 
-  var newDir = vP.normalize();
+  var newDir = newDirPx;
   newDir.applyAxisAngle(new THREE.Vector3(-1, 0, 0), change);
   Matrix4Update(newPos, newDir, newMiniPos);
 
@@ -68,7 +68,7 @@ function moveOnPy() {
   var newMiniPos = tank.localToWorld(new THREE.Vector3(go, 0, 0));
   newMiniPos.y = 75
 
-  var newDir = vP.normalize();
+  var newDir = newDirPy;
   newDir.applyAxisAngle(new THREE.Vector3(0, -1, 0), change);
   Matrix4Update(newPos, newDir, newMiniPos);
 

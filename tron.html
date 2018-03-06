@@ -140,8 +140,8 @@
   var change = 0;
   var totalChange = 0;
   var changeX = 0, changeY = 1, changeZ = 0;
-  var quat1 = new THREE.Quaternion();
-  var quat2 = new THREE.Quaternion();
+  var quat1, quat2;
+  
 
   var pickables = [];
   var planes = [];
@@ -168,11 +168,24 @@
   var refalctionDec = false;
   var bigBallrefalctionDec = false;
   var alpha = 0, alpha2 = 0;
-  var pos1, pos2, quat1, quat2;
+  var pos1, pos2, pos;
   var localX, localY, localZ;
   var changeX2 = 0, changeY2 = 0, changeZ2 = 0;
   var changeControl = false;
   var ban = false;
+
+  var turning = false;
+  var ONPLANE = 0; // on WHICH plane
+  var TOPLANE; // for turning: TO which plane
+
+  var planeMoves = [
+    {planeNormal: new THREE.Vector3(0, 1, 0), moveFunc: moveOnNy}, 
+    {planeNormal: new THREE.Vector3(-1, 0, 0), moveFunc: moveOnPx},
+    {planeNormal: new THREE.Vector3(0, -1, 0), moveFunc: moveOnPy},
+    {planeNormal: new THREE.Vector3(1, 0, 0), moveFunc: moveOnNx}
+  ];
+
+  var newDirNy = new THREE.Vector3(1, 0, 0), newDirPx = new THREE.Vector3(0, 1, 0), newDirPy = new THREE.Vector3(-1, 0, 0);
 
   init();
   animate();
@@ -411,10 +424,13 @@
 
     //stats = new Stats();
     //document.body.appendChild( stats.dom );
-    tank.matrix.setPosition	(new THREE.Vector3(0,-67,0));
+
+    /////////////////////////////////////////////////////////////////////////////
+
+    tank.matrix.setPosition	(new THREE.Vector3(0, -67, 0));
     quat1 = new THREE.Quaternion();
     quat2 = new THREE.Quaternion();
-    quat1.setFromRotationMatrix ( tank.matrix );
+
     ///////////////////////////////////////////////////////////////////////////////
 
     setInterval(blink, 300);
@@ -447,8 +463,6 @@
 
     keyboard.update();
 
-
-
     if (keyboard.pressed("W")) {
 
       go += 3;
@@ -459,31 +473,25 @@
 
     }
 
+    if (keyboard.pressed("A")) {
 
-    if(ban === false){
-
-
-      if (keyboard.pressed("A")) {
-
-        change += 0.035;
-        totalChange += change;
-        tire.rotation.z -= 0.2;
-        tire2.rotation.z += 0.2;
-        scene.remove(line, lineR, lineR2);
+      change += 0.035;
+      totalChange += change;
+      tire.rotation.z -= 0.2;
+      tire2.rotation.z += 0.2;
+      scene.remove(line, lineR, lineR2);
 
 
-      }
+    }
 
 
-      if (keyboard.pressed("D")) {
+    if (keyboard.pressed("D")) {
 
-        change += -0.035;
-        totalChange += change;
-        tire.rotation.z += 0.2;
-        tire2.rotation.z -= 0.2;
-        scene.remove(line, lineR, lineR2);
-
-      }
+      change += -0.035;
+      totalChange += change;
+      tire.rotation.z += 0.2;
+      tire2.rotation.z -= 0.2;
+      scene.remove(line, lineR, lineR2);
 
     }
 
