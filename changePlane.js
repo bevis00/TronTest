@@ -110,9 +110,9 @@ function changePlane(){
     camera.position.set(cameraOffset.x, cameraOffset.y, cameraOffset.z);
 
     if(ONPLANE === 0)
-      upTemp.set(0, 1, 0);
+      upTemp.set(planeMoves[ONPLANE].planeNormal.x, planeMoves[ONPLANE].planeNormal.y, planeMoves[ONPLANE].planeNormal.z);
     if(ONPLANE === 1)
-      upTemp.set(-1, 0, 0);
+      upTemp.set(planeMoves[ONPLANE].planeNormal.x, planeMoves[ONPLANE].planeNormal.y, planeMoves[ONPLANE].planeNormal.z);
 
     camera.up.copy(upTemp);
     camera.lookAt(barrel.localToWorld(new THREE.Vector3(0, 10, 0)));
@@ -124,6 +124,7 @@ function changePlane(){
       ONPLANE = TOPLANE;
       alpha = 0;
     }
+    
     return;
 
   }
@@ -179,7 +180,7 @@ function changePlane(){
     var rotation = planeMoves[ONPLANE].planeNormal.clone().cross(planeMoves[TOPLANE].planeNormal);
 
     pos2 = tank.clone().localToWorld(new THREE.Vector3(0, 0, 0)).add(avatarBody).add(nD);
-    quat2.setFromAxisAngle(rotation, Math.PI / 2);
+    quat2.setFromAxisAngle(rotation, Math.PI);
     changeTurn(pos1, quat1, pos2, quat2);
 
   }
