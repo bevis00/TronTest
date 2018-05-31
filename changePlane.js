@@ -1,7 +1,7 @@
 
 function changeTurn(pos1, quat1, pos2, quat2) {
 
-  console.log('in turn');
+  //console.log('in turn');
 
   alpha += 0.01;
 
@@ -13,7 +13,8 @@ function changeTurn(pos1, quat1, pos2, quat2) {
   var pp = pos1.clone();
   pp.lerp(pos2, alpha);
   tank.matrix.setPosition(pp);
-
+  //console.log(tank.matrix.elements[12], tank.matrix.elements[13], tank.matrix.elements[14]);
+  console.log(alpha);
   return alpha;
 
 }
@@ -102,6 +103,46 @@ function changePlane(){
 
   }
 
+  //facePy, up = -Y = Vector3(0, -1, 0)
+  if (changeX === 0 && changeY === -1 && changeZ === 0 && detection.x <= 75 && detection.x >= -75 && detection.z <= 75 && detection.z >= -75){
+
+    motionHint.rotation.y = Math.atan2( -tank.worldToLocal(target.localToWorld(new THREE.Vector3(0, 0, 0))).z, tank.worldToLocal(target.localToWorld(new THREE.Vector3(0, 0, 0))).x );
+    motionHintBall.rotation.y = Math.atan2( -tank.worldToLocal(ball.localToWorld(new THREE.Vector3(0, 0, 0))).z, tank.worldToLocal(ball.localToWorld(new THREE.Vector3(0, 0, 0))).x );
+
+    if(camera.position.x > 74)
+      for (var i = 0; i < 388; i++)
+        wallPx[i].visible = false;
+    else
+      for (var i = 0; i < 388; i++)
+        if(wallPx[i].alive === true)
+          wallPx[i].visible = true;
+
+    if(camera.position.x < -74)
+      for (var i = 0; i < 388; i++)
+        wallNx[i].visible = false;
+    else
+      for (var i = 0; i < 388; i++)
+        if(wallNx[i].alive === true)
+          wallNx[i].visible = true;
+
+    if(camera.position.z > 74)
+      for (var i = 0; i < 388; i++)
+        wallPz[i].visible = false;
+    else
+      for (var i = 0; i < 388; i++)
+        if(wallPz[i].alive === true)
+          wallPz[i].visible = true;
+
+    if(camera.position.z < -74)
+      for (var i = 0; i < 388; i++)
+        wallNz[i].visible = false;
+    else
+      for (var i = 0; i < 388; i++)
+        if(wallNz[i].alive === true)
+          wallNz[i].visible = true;
+
+  }
+
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   if (turning) {
@@ -124,7 +165,7 @@ function changePlane(){
       ONPLANE = TOPLANE;
       alpha = 0;
     }
-    
+    //console.log(tank.localToWorld(new THREE.Vector3(0, 0, 0)));
     return;
 
   }
@@ -150,7 +191,7 @@ function changePlane(){
     changeZ = 0;
 
     TOPLANE = 1; // move to plane Px
-    var rotation = planeMoves[ONPLANE].planeNormal.clone().cross(planeMoves[TOPLANE].planeNormal);
+    var rotation = avatarBody.clone().normalize().cross(planeMoves[ONPLANE].planeNormal);
 
     pos2 = tank.clone().localToWorld(new THREE.Vector3(0, 0, 0)).add(avatarBody).add(nD);
     quat2.setFromAxisAngle(rotation, Math.PI / 2);
