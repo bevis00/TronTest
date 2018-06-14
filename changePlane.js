@@ -14,7 +14,7 @@ function changeTurn(pos1, quat1, pos2, quat2) {
   pp.lerp(pos2, alpha);
   tank.matrix.setPosition(pp);
   //console.log(tank.matrix.elements[12], tank.matrix.elements[13], tank.matrix.elements[14]);
-  console.log(alpha);
+  console.log(pos2);
   return alpha;
 
 }
@@ -225,5 +225,5 @@ function changePlane(){
     changeTurn(pos1, quat1, pos2, quat2);
 
   }
-  
+
 }

@@ -1,4 +1,15 @@
+function newPlanePosDir(nextNor,nowNor,tankPosnow,tankDirnow){
+  var returnPosDir = {pos,dir};
+  var rotationAxis = new THREE.Vector3();
+  var radians ,distance ;
 
+  rotationAxis.crossVectors(nextNor,nowNor).normalize;
+  radians = tankDirnow.angleTo(rotationAxis);
+  distance = 20*Math.cos(radians);
+
+
+  return returnPosDir;
+}
 function Matrix4Update(newPos, newDir, newMiniPos) {
 
   tank.matrixAutoUpdate = false;
