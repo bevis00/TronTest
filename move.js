@@ -1,12 +1,19 @@
 function newPlanePosDir(nextNor,nowNor,tankPosnow,tankDirnow){
-  var returnPosDir = {pos,dir};
+  var returnPosDir = {pos:new THREE.Vector3(),dir:new THREE.Vector3()};
   var rotationAxis = new THREE.Vector3();
-  var radians ,distance ;
+  var radians ,distance;
+  var midPoint , endPoint;
 
-  rotationAxis.crossVectors(nextNor,nowNor).normalize;
+  rotationAxis.crossVectors(nowNor,nextNor).normalize();
   radians = tankDirnow.angleTo(rotationAxis);
-  distance = 20*Math.cos(radians);
-
+  distance = 20/Math.sin(radians);
+  midPoint = tankPosnow.add(tankDirnow.multiplyScalar(distance));
+  tankDirnow.applyAxisAngle(rotationAxis,Math.PI/2);
+  endPoint = midPoint.add(tankDirnow);
+  endPoint.add(nextNor.multiplyScalar(9.5));
+  console.log(endPoint);
+  returnPosDir.pos = endPoint;
+  returnPosDir.dir = tankDirnow;
 
   return returnPosDir;
 }
@@ -60,7 +67,9 @@ function moveOnPx() {
   var newMiniPos = tank.localToWorld(new THREE.Vector3(go, 0, 0));
   newMiniPos.x = 75;
 
-  var newDir = newDirPx;
+
+
+  var newDir = posDirObj.dir;
   newDir.applyAxisAngle(new THREE.Vector3(-1, 0, 0), change);
   Matrix4Update(newPos, newDir, newMiniPos);
 

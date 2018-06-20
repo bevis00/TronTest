@@ -193,7 +193,12 @@ function changePlane(){
     TOPLANE = 1; // move to plane Px
     var rotation = avatarBody.clone().normalize().cross(planeMoves[ONPLANE].planeNormal);
 
-    pos2 = tank.clone().localToWorld(new THREE.Vector3(0, 0, 0)).add(avatarBody).add(nD);
+    posDirObj = newPlanePosDir(planeMoves[TOPLANE].planeNormal, planeMoves[ONPLANE].planeNormal, tank.clone().localToWorld(new THREE.Vector3(0, 0, 0)), avatarBody.normalize());
+
+    pos2 = posDirObj.pos;
+    
+
+    //pos2 = tank.clone().localToWorld(new THREE.Vector3(0, 0, 0)).add(avatarBody).add(nD);
     quat2.setFromAxisAngle(rotation, Math.PI / 2);
     changeTurn(pos1, quat1, pos2, quat2);
 
